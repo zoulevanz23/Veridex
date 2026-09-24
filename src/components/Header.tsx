@@ -1,83 +1,186 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ShieldCheck, Menu, X } from 'lucide-react'
-import { checkServerHealth } from '../lib/api'
-import Button from './ui/Button'
+import { Menu, X, Zap, LogOut, User as UserIcon } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
-const Header = () => {
-  const [expanded, setExpanded] = useState(false)
+const NAV = [
+  { label: 'Verify', to: '/analyzer' },
+  { label: 'How it works', to: '/features' },
+  { label: 'Extension', to: '/extension' },
+  { label: 'About', to: '/about' },
+]
+
+export default function Header() {
   const location = useLocation()
-  const [serverHealthy, setServerHealthy] = useState<boolean | null>(null)
+  const [open, setOpen] = useState(false)
+  const { user, isLoggedIn, credits, usageCount, logout } = useAuth()
 
-  useEffect(() => {
-    let isMounted = true
-    ;(async () => {
-      try {
-        const ok = await checkServerHealth()
-        if (isMounted) setServerHealthy(ok)
-      } catch {
-        if (isMounted) setServerHealthy(false)
-      }
-    })()
-    return () => { isMounted = false }
-  }, [])
-
-  const isActive = (p: string) => location.pathname === p
+  const isActive = (to: string) => to !== '/features#extension' && location.pathname === to.split('#')[0]
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <nav className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          <Link to="/" className="flex items-center gap-2 no-underline">
-            <div className="inline-flex items-center justify-center w-7 h-7 bg-slate-900 rounded-md">
-              <ShieldCheck size={16} color="#FFFFFF" strokeWidth={2} />
-            </div>
-            <span className="text-slate-900 font-semibold">TruthCheck AI</span>
-            <span className="text-xs font-semibold text-slate-500 border border-slate-200 rounded-full px-2 py-0.5 ml-1">BETA</span>
-          </Link>
+    <header
+      className="sticky top-0 z-50"
+      style={{
+        background: 'var(--paper)',
+        borderBottom: '1px solid var(--line)',
+      }}
+    >
+      <nav
+        className="mx-auto px-6 lg:px-12 flex items-center justify-between h-[52px]"
+        style={{ maxWidth: 1180 }}
+      >
+        {/* Wordmark */}
+        <Link
+          to="/"
+          className="font-sans font-semibold text-base no-underline tracking-tight flex items-center gap-2"
+          style={{ color: 'var(--ink)' }}
+          onClick={() => setOpen(false)}
+        >
+          Veridex
+        </Link>
 
-          <button
-            className="lg:hidden p-2 rounded-md hover:bg-slate-100"
-            onClick={() => setExpanded(!expanded)}
-            aria-label="Toggle menu"
-          >
-            {expanded ? <X size={18} /> : <Menu size={18} />}
-          </button>
-
-          <div className={`${expanded ? 'flex' : 'hidden'} lg:flex lg:items-center lg:gap-3 absolute lg:static top-14 left-0 right-0 bg-white lg:bg-transparent border-t lg:border-t-0 border-slate-200 lg:border-0 p-4 lg:p-0 flex-col lg:flex-row shadow-lg lg:shadow-none`}>
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-7">
+          {NAV.map(({ label, to }) => (
             <Link
-              to="/"
-              className={`text-sm font-medium no-underline ${isActive('/') ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setExpanded(false)}
+              key={label}
+              to={to}
+              className="font-sans text-sm no-underline transition-colors"
+              style={{
+                color: isActive(to) ? 'var(--ink)' : 'var(--ink-soft)',
+                fontWeight: isActive(to) ? 600 : 400,
+              }}
             >
-              Verify
+              {label}
             </Link>
-            <Link
-              to="/features"
-              className={`text-sm font-medium no-underline ${isActive('/features') ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setExpanded(false)}
-            >
-              How it works
-            </Link>
-            <Link
-              to="/about"
-              className={`text-sm font-medium no-underline ${isActive('/about') ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setExpanded(false)}
-            >
-              About
-            </Link>
-            <div className="hidden lg:block w-px h-5 bg-slate-200 mx-3" />
-            <div className="flex items-center gap-2 text-xs font-medium font-mono" style={{ color: serverHealthy ? '#059669' : serverHealthy === false ? '#DC2626' : '#64748B' }}>
-              <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: serverHealthy ? '#059669' : serverHealthy === false ? '#DC2626' : '#CBD5E1' }} />
-              {serverHealthy == null ? 'Checking' : serverHealthy ? 'Operational' : 'Offline'}
-            </div>
-            <Button to="/analyzer" variant="primary" onClick={() => setExpanded(false)} className="px-4 py-2.5 text-xs ml-2">
-              Open analyzer
-            </Button>
-          </div>
+          ))}
         </div>
+
+        {/* Right side: Credits badge & Auth controls */}
+        <div className="hidden md:flex items-center gap-4">
+          {/* Credit status pill */}
+          {isLoggedIn ? (
+            <div
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-mono font-semibold"
+              style={{ background: 'rgba(22, 163, 74, 0.1)', color: 'var(--safe)', border: '1px solid rgba(22, 163, 74, 0.2)' }}
+              title={`${usageCount} verification checks completed with this account`}
+            >
+              <Zap size={12} />
+              Unlimited Checks ({usageCount} run)
+            </div>
+          ) : (
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-mono font-semibold no-underline transition-all"
+              style={{
+                background: credits <= 2 ? 'rgba(220, 38, 38, 0.1)' : 'var(--surface)',
+                color: credits <= 2 ? 'var(--scam)' : 'var(--ink)',
+                border: '1px solid var(--line)',
+              }}
+              title="Guests get 10 free credits. Register for unlimited checks."
+            >
+              <Zap size={12} className={credits <= 2 ? 'animate-pulse' : ''} />
+              {credits}/10 Free Checks
+            </Link>
+          )}
+
+          {/* User profile / Auth buttons */}
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full object-cover border border-slate-300" />
+              ) : (
+                <UserIcon size={14} style={{ color: 'var(--ink-soft)' }} />
+              )}
+              <span className="text-xs font-sans font-semibold flex items-center gap-1.5" style={{ color: 'var(--ink)' }}>
+                {user?.name}
+              </span>
+              <button
+                onClick={logout}
+                className="p-1 rounded-sm transition-colors cursor-pointer"
+                style={{ color: 'var(--ink-soft)', background: 'none', border: 'none' }}
+                title="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 text-xs font-sans">
+              <Link
+                to="/signin"
+                className="no-underline font-medium"
+                style={{ color: 'var(--ink-soft)' }}
+              >
+                Sign in
+              </Link>
+              <Link
+                to="/register"
+                className="no-underline font-semibold px-3 py-1.5 rounded-sm transition-all"
+                style={{ background: 'var(--ink)', color: 'var(--paper)' }}
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile toggle */}
+        <button
+          className="md:hidden p-1.5 rounded"
+          style={{ color: 'var(--ink)' }}
+          onClick={() => setOpen(v => !v)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+        >
+          {open ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </nav>
+
+      {/* Mobile menu */}
+      {open && (
+        <div
+          className="md:hidden flex flex-col px-6 pb-4 gap-4"
+          style={{ background: 'var(--paper)', borderBottom: '1px solid var(--line)' }}
+        >
+          {/* Mobile credit badge */}
+          <div className="pt-2">
+            {isLoggedIn ? (
+              <span className="text-xs font-mono font-semibold" style={{ color: 'var(--safe)' }}>Unlimited Checks Active ({usageCount} run)</span>
+            ) : (
+              <span className="text-xs font-mono" style={{ color: 'var(--ink-soft)' }}>{credits}/10 Guest Checks Remaining</span>
+            )}
+          </div>
+          {NAV.map(({ label, to }) => (
+            <Link
+              key={label}
+              to={to}
+              className="font-sans text-sm no-underline"
+              style={{ color: isActive(to) ? 'var(--ink)' : 'var(--ink-soft)', fontWeight: isActive(to) ? 600 : 400 }}
+              onClick={() => setOpen(false)}
+            >
+              {label}
+            </Link>
+          ))}
+          {isLoggedIn ? (
+            <button
+              onClick={() => { logout(); setOpen(false) }}
+              className="font-sans text-sm text-left text-red-600 no-underline cursor-pointer"
+              style={{ background: 'none', border: 'none', padding: 0 }}
+            >
+              Sign out ({user?.email})
+            </button>
+          ) : (
+            <div className="flex gap-4 pt-2">
+              <Link to="/signin" className="font-sans text-sm font-semibold" style={{ color: 'var(--ink)' }} onClick={() => setOpen(false)}>
+                Sign in
+              </Link>
+              <Link to="/register" className="font-sans text-sm font-semibold text-emerald-700" onClick={() => setOpen(false)}>
+                Create Account
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   )
 }
-export default Header
