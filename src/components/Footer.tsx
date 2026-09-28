@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, Github } from 'lucide-react'
 export default function Footer(){
   return (
     <footer style={{ background: 'var(--surface)', borderTop: '1px solid var(--line)' }}>
@@ -11,10 +11,21 @@ export default function Footer(){
           <span className="font-instrument font-semibold" style={{ color: 'var(--ink)' }}>Veridex</span>
           <span>© {new Date().getFullYear()} • Privacy-first verification</span>
         </div>
-        <div className="flex gap-3.5 text-sm font-sans">
+        <div className="flex gap-3.5 text-sm font-sans items-center">
           <Link to="/features" className="no-underline" style={{ color: 'var(--ink-soft)' }}>How it works</Link>
           <Link to="/analyzer" className="no-underline" style={{ color: 'var(--ink-soft)' }}>Analyzer</Link>
           <Link to="/about" className="no-underline" style={{ color: 'var(--ink-soft)' }}>About</Link>
+          <span aria-hidden="true" style={{ width: 1, height: 16, background: 'var(--line)' }} />
+          <a
+            href="https://github.com/zoulevanz23"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Developer GitHub"
+            className="inline-flex items-center"
+            style={{ color: 'var(--ink-soft)' }}
+          >
+            <Github size={16} />
+          </a>
         </div>
       </div>
     </footer>
