@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ShieldCheck, Github } from 'lucide-react'
+import { ShieldCheck, Github, Linkedin, User } from 'lucide-react'
 export default function Footer(){
   return (
     <footer style={{ background: 'var(--surface)', borderTop: '1px solid var(--line)' }}>
@@ -25,6 +25,25 @@ export default function Footer(){
             style={{ color: 'var(--ink-soft)' }}
           >
             <Github size={16} />
+          </a>
+          {/* Placeholder links — swap hrefs for the real profile URLs */}
+          <a
+            href="#"
+            aria-label="Developer LinkedIn (link coming soon)"
+            title="LinkedIn (link coming soon)"
+            className="inline-flex items-center"
+            style={{ color: 'var(--ink-soft)', opacity: 0.55 }}
+          >
+            <Linkedin size={16} />
+          </a>
+          <a
+            href="#"
+            aria-label="Developer portfolio (link coming soon)"
+            title="Portfolio (link coming soon)"
+            className="inline-flex items-center"
+            style={{ color: 'var(--ink-soft)', opacity: 0.55 }}
+          >
+            <User size={16} />
           </a>
         </div>
       </div>
