@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Mail, Link2, Newspaper, FileText, Image as ImageIcon, ArrowRight, ShieldCheck, AlertTriangle, XCircle, Upload } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Mail, Link2, Newspaper, FileText, Image as ImageIcon, ArrowRight, ShieldCheck, AlertTriangle, XCircle, Upload, Sparkles } from 'lucide-react'
 import { analyzeContent, type AnalysisResponse } from '../lib/api'
 import ResultCard from './ResultCard'
 import Loader from './Loader'
@@ -24,6 +24,8 @@ const InputForm = () => {
   const [error, setError] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const canSubmit = (input.trim().length > 0 || !!file || !!imagePreview) && !isLoading
 
@@ -47,6 +49,23 @@ const InputForm = () => {
     } else {
       setImagePreview(null)
     }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+    const droppedFile = e.dataTransfer.files[0]
+    if (droppedFile) handleFileSelect(droppedFile)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,60 +144,112 @@ const InputForm = () => {
           </div>
 
           <div className="p-4">
-            <textarea
-              rows={7}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder={meta.placeholder}
-              maxLength={10000}
-              disabled={isLoading}
-              className={`w-full border rounded-sm p-3.5 bg-surface text-[14px] ${type === 'link' ? 'font-mono text-[13px]' : ''}`}
-              style={{ borderColor: 'var(--line)', color: 'var(--ink)', outline: 'none' }}
-              onFocus={e => e.currentTarget.style.borderColor = 'var(--lamp)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'var(--line)'}
-            />
-            {input.length > 9000 && (
-              <div className="flex gap-1.5 items-center mt-2 text-xs" style={{ color: 'var(--suspicious)' }}>
-                <AlertTriangle size={14} /> Approaching limit
-              </div>
-            )}
-
-            {imagePreview && (
-              <div className="mt-3 relative inline-block rounded-sm overflow-hidden max-w-[240px]" style={{ border: '1px solid var(--line)' }}>
-                <img src={imagePreview} alt="Upload preview" className="w-full max-h-48 object-cover block" />
-                <button
-                  type="button"
-                  onClick={() => { setImagePreview(null); setFile(null) }}
-                  className="absolute top-1.5 right-1.5 rounded-full p-1 cursor-pointer border-none"
-                  style={{ background: 'rgba(27,32,39,0.85)', color: 'var(--paper)' }}
-                >
-                  <XCircle size={16} />
-                </button>
-              </div>
-            )}
-
-            <div className="mt-3 flex items-center gap-3 flex-wrap">
-              <label className="text-sm inline-flex items-center gap-2 cursor-pointer" style={{ color: 'var(--ink-soft)' }}>
+            {type === 'image' ? (
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative rounded-lg border-2 border-dashed transition-all duration-300 ${
+                  isDragging
+                    ? 'border-[var(--lamp)] bg-[rgba(59,130,246,0.05)] scale-[1.02]'
+                    : 'border-[var(--line)] bg-[var(--surface)] hover:border-[var(--ink-soft)]'
+                } ${imagePreview ? 'p-0' : 'p-8'}`}
+                style={{ minHeight: imagePreview ? 'auto' : '200px' }}
+              >
                 <input
+                  ref={fileInputRef}
                   type="file"
-                  accept=".txt,.png,.jpg,.jpeg,.webp,.gif"
+                  accept=".png,.jpg,.jpeg,.webp,.gif"
                   className="hidden"
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleFileSelect(f) }}
                 />
-                <span className="border rounded-sm px-2.5 py-1.5 font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer" style={{ borderColor: 'var(--line)', background: 'var(--paper)', color: 'var(--ink)' }}>
-                  <Upload size={13} /> Attach file or image
-                </span>
-                <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>JPG, PNG, WEBP, TXT</span>
-              </label>
-              {file && !imagePreview && (
-                <span className="text-xs rounded-sm px-2.5 py-1 inline-flex gap-1.5 items-center" style={{ color: 'var(--ink)', background: 'var(--paper)', border: '1px solid var(--line)' }}>
-                  {file.name}
+                {imagePreview ? (
+                  <div className="relative group">
+                    <img
+                      src={imagePreview}
+                      alt="Upload preview"
+                      className="w-full max-h-[400px] object-contain rounded-lg block"
+                      style={{ background: 'var(--paper)' }}
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => { setImagePreview(null); setFile(null) }}
+                        className="px-4 py-2 rounded-lg bg-white text-black font-semibold text-sm flex items-center gap-2 hover:bg-gray-100 transition-colors"
+                      >
+                        <XCircle size={16} /> Remove image
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-center cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ${
+                      isDragging ? 'bg-[var(--lamp)] scale-110' : 'bg-[var(--surface)]'
+                    }`} style={{ border: '2px solid var(--line)' }}>
+                      <Upload size={28} style={{ color: isDragging ? 'white' : 'var(--ink-soft)' }} />
+                    </div>
+                    <p className="text-sm font-semibold mb-2" style={{ color: 'var(--ink)' }}>
+                      {isDragging ? 'Drop your image here' : 'Upload image to scan'}
+                    </p>
+                    <p className="text-xs mb-4" style={{ color: 'var(--ink-soft)' }}>
+                      Drag and drop or click to browse
+                    </p>
+                    <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                      <Sparkles size={14} />
+                      <span>AI-powered deepfake detection</span>
+                    </div>
+                    <p className="text-xs mt-3" style={{ color: 'var(--ink-soft)' }}>
+                      Supports: JPG, PNG, WEBP (max 10MB)
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <textarea
+                  rows={7}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  placeholder={meta.placeholder}
+                  maxLength={10000}
+                  disabled={isLoading}
+                  className={`w-full border rounded-sm p-3.5 bg-surface text-[14px] ${type === 'link' ? 'font-mono text-[13px]' : ''}`}
+                  style={{ borderColor: 'var(--line)', color: 'var(--ink)', outline: 'none' }}
+                  onFocus={e => e.currentTarget.style.borderColor = 'var(--lamp)'}
+                  onBlur={e => e.currentTarget.style.borderColor = 'var(--line)'}
+                />
+                {input.length > 9000 && (
+                  <div className="flex gap-1.5 items-center mt-2 text-xs" style={{ color: 'var(--suspicious)' }}>
+                    <AlertTriangle size={14} /> Approaching limit
+                  </div>
+                )}
+              </>
+            )}
+
+            {type !== 'image' && (
+              <div className="mt-3 flex items-center gap-3 flex-wrap">
+                <label className="text-sm inline-flex items-center gap-2 cursor-pointer" style={{ color: 'var(--ink-soft)' }}>
+                  <input
+                    type="file"
+                    accept=".txt,.png,.jpg,.jpeg,.webp,.gif"
+                    className="hidden"
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleFileSelect(f) }}
+                  />
+                  <span className="border rounded-sm px-2.5 py-1.5 font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer" style={{ borderColor: 'var(--line)', background: 'var(--paper)', color: 'var(--ink)' }}>
+                    <Upload size={13} /> Attach file or image
+                  </span>
+                  <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>JPG, PNG, WEBP, TXT</span>
+                </label>
+                {file && !imagePreview && (
+                  <span className="text-xs rounded-sm px-2.5 py-1 inline-flex gap-1.5 items-center" style={{ color: 'var(--ink)', background: 'var(--paper)', border: '1px solid var(--line)' }}>
+                    {file.name}
                   <button type="button" onClick={() => setFile(null)} className="border-none bg-transparent cursor-pointer p-0 leading-none" style={{ color: 'var(--ink-soft)' }}>
-                    <XCircle size={14} />
-                  </button>
-                </span>
-              )}
-            </div>
+                      <XCircle size={14} />
+                    </button>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="px-4 py-3 flex justify-end items-center gap-3" style={{ background: 'var(--paper)', borderTop: '1px solid var(--line)' }}>
