@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "echo build step not required",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -32,7 +32,8 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.2",
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "typescript": "^5.6.0"
   },
   "engines": {
     "node": ">=18.0.0"
