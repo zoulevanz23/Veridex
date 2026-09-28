@@ -93,7 +93,7 @@ export const analyzeContent = async (
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 12000)
   try {
-    const res = await fetch(`${API_BASE_URL}/analyze`, {
+    const res = await fetch(`${API_BASE_URL}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, type }),
