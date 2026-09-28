@@ -7,13 +7,17 @@ interface Props {
   onSuccess?: () => void
 }
 
+interface TokenResponse {
+  access_token: string
+}
+
 export default function GoogleSignInButton({ text = 'Continue with Google', onSuccess }: Props) {
   const { googleLogin } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
+    onSuccess: async (tokenResponse: TokenResponse) => {
       setLoading(true)
       setError(null)
       try {
@@ -33,13 +37,14 @@ export default function GoogleSignInButton({ text = 'Continue with Google', onSu
         })
 
         onSuccess?.()
-      } catch (err: any) {
-        setError(err.message || 'Google sign-in failed')
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Google sign-in failed'
+        setError(message)
       } finally {
         setLoading(false)
       }
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       console.error('Google login error:', err)
       setError('Google sign-in was cancelled or failed.')
       setLoading(false)

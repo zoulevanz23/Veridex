@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.gitignore
+README.md
+.env
+.env.local
+.env.*.local
+Vid
+browser-extension
+.vscode
+.idea
+*.log
+vite.log

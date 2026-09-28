@@ -225,6 +225,23 @@ commits.md                     # Commit strategy documentation
 
 ## 🚀 Deployment
 
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions including:
+- Docker setup
+- CI/CD with GitHub Actions
+- Free deployment options (Railway, Vercel, Render)
+- Environment configuration
+
+**Quick Docker Start:**
+```bash
+docker-compose up --build
+# Access at http://localhost
+```
+
+**Free Hosting Options:**
+- **Backend:** Railway (free tier with $5/month credit)
+- **Frontend:** Vercel (unlimited free tier)
+- **CI/CD:** GitHub Actions (free)
+
 **Frontend Vercel**
 * Build: `npm run build` → `dist`
 * Env: `VITE_API_BASE_URL=https://your-backend.onrender.com`
