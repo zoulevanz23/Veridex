@@ -42,7 +42,11 @@ app.use(express.json({ limit: '20kb' }));
 app.use(express.urlencoded({ extended: true, limit: '20kb' }));
 
 // Request logging
-app.use((req, _res, next) => { logger.info({ method: req.method, url: req.url }, 'req'); next(); });
+app.use((req, _res, next) => {
+  console.log('REQUEST RECEIVED:', { method: req.method, url: req.url, path: req.path, headers: req.headers });
+  logger.info({ method: req.method, url: req.url }, 'req');
+  next();
+});
 
 // Auth routes (public) — /api/auth/register, /api/auth/login
 app.use('/api/auth', express.Router()
