@@ -44,7 +44,7 @@ export default function GoogleSignInButton({ text = 'Continue with Google', onSu
         setLoading(false)
       }
     },
-    onError: (err: Error) => {
+    onError: (err) => {
       console.error('Google login error:', err)
       setError('Google sign-in was cancelled or failed.')
       setLoading(false)
