@@ -59,7 +59,6 @@ app.use('/api/auth', express.Router()
 );
 
 // Protected routes — all require authentication
-app.use('/api/analyze', optionalAuthMiddleware);
 app.use('/api/bulk', optionalAuthMiddleware);
 app.use('/api/keys', authMiddleware);
 app.use('/api/analytics', authMiddleware);
