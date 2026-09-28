@@ -66,6 +66,11 @@ app.use(healthRouter);
 app.use('/api/advisories', advisoriesRouter);
 app.use('/api/analyze', analyzeRouter);
 
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server is working', timestamp: new Date().toISOString() });
+});
+
 // Bulk analysis routes (protected)
 app.use('/api/bulk', createBulkRoutes());
 
