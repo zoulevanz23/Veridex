@@ -32,12 +32,9 @@ app.use(cors({
   origin: (origin, cb) => {
     if (!origin) return cb(null, true); // curl / mobile
     if (allowedOrigins.includes(origin)) return cb(null, true);
-    if (!isProd) {
-      logger.warn({ origin }, 'CORS blocked in dev? allowing for DX');
-      return cb(null, true);
-    }
-    logger.warn({ origin, allowedOrigins }, 'CORS blocked');
-    return cb(new Error('Not allowed by CORS'));
+    // Allow all origins in production for now to debug
+    logger.warn({ origin, allowedOrigins }, 'CORS blocked but allowing for debugging');
+    return cb(null, true);
   },
   credentials: true,
 }));
