@@ -13,34 +13,29 @@ import { createBulkRoutes } from './bulk/route';
 // Security headers
 const app = express();
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", 'https://generativelanguage.googleapis.com', 'https://phish.sinking.yachts'],
-    },
-  },
-}));
+// Temporarily disable helmet to debug
+// app.use(helmet({
+//   contentSecurityPolicy: {
+//     directives: {
+//       defaultSrc: ["'self'"],
+//       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+//       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+//       scriptSrc: ["'self'"],
+//       imgSrc: ["'self'", 'data:', 'https:'],
+//       connectSrc: ["'self'", 'https://generativelanguage.googleapis.com', 'https://phish.sinking.yachts'],
+//     },
+//   },
+// }));
 app.disable('x-powered-by');
 
-// CORS — strict
+// CORS — permissive for debugging
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // curl / mobile
-    if (allowedOrigins.includes(origin)) return cb(null, true);
-    // Allow all origins in production for now to debug
-    logger.warn({ origin, allowedOrigins }, 'CORS blocked but allowing for debugging');
-    return cb(null, true);
-  },
+  origin: '*',
   credentials: false,
 }));
 
-// Rate limit global
-app.use(rateLimit({ windowMs: 15*60*1000, max: 100, standardHeaders: true, legacyHeaders: false }));
+// Temporarily disable rate limiter
+// app.use(rateLimit({ windowMs: 15*60*1000, max: 100, standardHeaders: true, legacyHeaders: false }));
 
 // Body parsers — tight limit (was 10mb, now 20kb covers 10k chars + overhead)
 app.use(express.json({ limit: '20kb' }));
