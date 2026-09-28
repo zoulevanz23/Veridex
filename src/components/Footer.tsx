@@ -26,13 +26,14 @@ export default function Footer(){
           >
             <Github size={16} />
           </a>
-          {/* Placeholder links — swap hrefs for the real profile URLs */}
+          {/* Placeholder link — swap href for the real portfolio URL */}
           <a
-            href="#"
-            aria-label="Developer LinkedIn (link coming soon)"
-            title="LinkedIn (link coming soon)"
+            href="https://www.linkedin.com/in/josh-ivan-sartin-312287376/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Developer LinkedIn"
             className="inline-flex items-center"
-            style={{ color: 'var(--ink-soft)', opacity: 0.55 }}
+            style={{ color: 'var(--ink-soft)' }}
           >
             <Linkedin size={16} />
           </a>
