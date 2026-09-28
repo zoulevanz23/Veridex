@@ -1,0 +1,153 @@
+/* Veridex Examination Desk - Extension Settings CSS */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Archivo:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
+
+:root {
+  --paper: #EDEEEA;
+  --surface: #F7F8F4;
+  --ink: #1B2027;
+  --ink-soft: #4C535C;
+  --line: #C9CCC3;
+  --lamp: #E4A61B;
+  --safe: #1E7F5C;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 40px 20px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 580px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.brand-shield {
+  width: 20px;
+  height: 20px;
+  color: var(--lamp);
+}
+
+.subtitle {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.card-section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--ink);
+  border-radius: 2px;
+  padding: 20px;
+}
+
+.card-section h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.section-desc {
+  margin: 0 0 16px 0;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.text-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+
+.text-input:focus {
+  border-color: var(--lamp);
+  box-shadow: 0 0 0 2px rgba(228, 166, 27, 0.2);
+}
+
+.primary-btn {
+  padding: 10px 18px;
+  background: var(--ink);
+  color: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.primary-btn:hover {
+  border-color: var(--lamp);
+}
+
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.form-check-input {
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.form-check-label {
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.about p {
+  margin: 4px 0;
+  font-size: 12px;
+  color: var(--ink-soft);
+}

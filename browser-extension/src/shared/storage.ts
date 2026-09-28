@@ -1,10 +1,11 @@
-// Shared storage utility for the browser extension
+// Shared storage utility for the Veridex browser extension
 // Stores API key, user preferences, and analysis history
 
-const STORAGE_KEY = 'truthcheck-ai-storage';
+const STORAGE_KEY = 'veridex-storage';
 
 export interface StorageData {
   apiKey?: string;
+  backendUrl?: string;
   lastAnalysis?: {
     timestamp: number;
     verdict: string;
@@ -12,37 +13,37 @@ export interface StorageData {
   };
   preferences: {
     showSafetyIndicator: boolean;
+    showSelectionTooltip: boolean;
     autoAnalyzeLinks: boolean;
   };
 }
 
 export const storage = {
-  // Get stored data
   get: async (): Promise<StorageData> => {
     return new Promise((resolve) => {
       chrome.storage.local.get(STORAGE_KEY, (result) => {
-        resolve result[STORAGE_KEY] || {
+        resolve(result[STORAGE_KEY] || {
+          backendUrl: 'http://localhost:5000',
           preferences: {
             showSafetyIndicator: true,
+            showSelectionTooltip: true,
             autoAnalyzeLinks: false,
           },
-        };
+        });
       });
     });
   },
 
-  // Save data
   set: async (data: Partial<StorageData>): Promise<void> => {
     return new Promise((resolve) => {
       chrome.storage.local.set({ [STORAGE_KEY]: data }, resolve);
     });
   },
 
-  // Update specific fields
   update: async (data: Partial<StorageData>): Promise<void> => {
     return new Promise((resolve) => {
       chrome.storage.local.get(STORAGE_KEY, (current) => {
-        const merged = { ...current[STORAGE_KEY], ...data };
+        const merged = { ...(current[STORAGE_KEY] || {}), ...data };
         chrome.storage.local.set({ [STORAGE_KEY]: merged }, resolve);
       });
     });

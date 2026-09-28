@@ -1,33 +1,397 @@
+/* Veridex Examination Desk — Browser Extension Popup Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Archivo:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
+
+:root {
+  --paper: #EDEEEA;
+  --surface: #F7F8F4;
+  --ink: #1B2027;
+  --ink-soft: #4C535C;
+  --line: #C9CCC3;
+  --lamp: #E4A61B;
+  --safe: #1E7F5C;
+  --suspicious: #B8860B;
+  --scam: #A8402A;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  min-width: 200px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  padding: 16px;
-  line-height: 1.5;
+  width: 340px;
+  margin: 0;
+  padding: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
-h3 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  color: #1F2937;
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-p {
-  margin: 0 0 16px 0;
-  font-size: 14px;
-  color: #6B7280;
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
 }
 
-button {
-  background: #1D4ED8;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.brand-shield {
+  width: 16px;
+  height: 16px;
+  color: var(--lamp);
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--safe);
+}
+
+.status-badge.offline .status-dot {
+  background: var(--scam);
+}
+
+/* Action Buttons */
+.action-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.primary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
 }
 
-button:hover {
-  background: #2563EB;
+.primary-btn:hover {
+  border-color: var(--lamp);
+}
+
+.primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.custom-input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px;
+}
+
+.custom-input-box textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--ink);
+  resize: none;
+  outline: none;
+}
+
+.custom-input-box textarea::placeholder {
+  color: var(--ink-soft);
+}
+
+.accent-btn {
+  align-self: flex-end;
+  padding: 5px 12px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.accent-btn:hover {
+  border-color: var(--lamp);
+}
+
+/* Result Card */
+.result-card {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 12px;
+}
+
+.result-card.show {
+  display: block;
+}
+
+.result-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 2px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-verdict {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.result-confidence {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.result-banner.safe .result-verdict { color: var(--safe); }
+
+.result-banner.suspicious .result-verdict, .result-banner.questionable .result-verdict { color: var(--suspicious); }
+
+.result-banner.scam .result-verdict, .result-banner.likely_fake .result-verdict { color: var(--scam); }
+
+.result-snippet {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-explanation {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 12px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.result-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.result-signals span {
+  font-size: 11px;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.result-signals span::before {
+  content: '•';
+  color: var(--lamp);
+  font-weight: bold;
+}
+
+/* Controls */
+.controls-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.outline-btn {
+  padding: 6px 10px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.outline-btn:hover {
+  background: var(--paper);
+}
+
+/* History Drawer */
+.history-section {
+  display: none;
+  border-top: 1px dashed var(--line);
+  padding-top: 10px;
+}
+
+.history-section.show {
+  display: block;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+
+#historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.history-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 6px 8px;
+}
+
+.history-item-title {
+  font-size: 11px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+.history-verdict.safe { color: var(--safe); font-weight: 700; }
+.history-verdict.suspicious { color: var(--suspicious); font-weight: 700; }
+.history-verdict.scam { color: var(--scam); font-weight: 700; }
+
+.empty-history {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 11px;
+  padding: 12px 0;
+}
+
+/* Footer */
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+}
+
+.link-btn:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.app-link {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.app-link:hover {
+  color: var(--lamp);
+}
+
+.version-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

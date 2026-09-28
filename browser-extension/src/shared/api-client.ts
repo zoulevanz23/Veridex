@@ -1,9 +1,9 @@
-// Shared API client for the browser extension
-// Handles communication with the TruthCheck AI backend
+// Shared API client for the Veridex browser extension
+// Handles communication with the Veridex backend
 
-const API_BASE = import.meta.env.DEV 
-  ? 'http://localhost:5000' 
-  : 'https://your-backend.onrender.com';
+import storage from './storage';
+
+const DEFAULT_API_BASE = 'http://localhost:5000';
 
 export interface AnalysisResult {
   verdict: 'SAFE' | 'SUSPICIOUS' | 'SCAM' | 'TRUSTWORTHY' | 'QUESTIONABLE' | 'LIKELY_FAKE';
@@ -18,35 +18,56 @@ export interface AnalyzeRequest {
 }
 
 export const api = {
-  // Analyze content
+  getApiBase: async (): Promise<string> => {
+    const data = await storage.get();
+    return (data.backendUrl || DEFAULT_API_BASE).replace(/\/$/, '');
+  },
+
   analyze: async (request: AnalyzeRequest): Promise<AnalysisResult> => {
-    const response = await fetch(`${API_BASE}/analyze`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(await storage.get()).then(data => data.apiKey ? { 'x-api-key': data.apiKey } : {}),
-      },
-      body: JSON.stringify(request),
-    });
+    const baseUrl = await api.getApiBase();
+    const data = await storage.get();
+    
+    // Try /api/analyze endpoint first, fall back to /analyze
+    const endpoints = [`${baseUrl}/api/analyze`, `${baseUrl}/analyze`];
+    let lastError: Error | null = null;
 
-    const data = await response.json();
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(data.apiKey ? { 'x-api-key': data.apiKey } : {}),
+          },
+          body: JSON.stringify(request),
+        });
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Analysis failed');
+        const resData = await response.json().catch(() => ({}));
+
+        if (response.ok && resData.result) {
+          return resData.result as AnalysisResult;
+        }
+
+        if (response.status === 404) {
+          continue; // Try next endpoint
+        }
+
+        throw new Error(resData.error || `HTTP ${response.status}`);
+      } catch (err: any) {
+        lastError = err;
+      }
     }
 
-    return data.result;
+    throw lastError || new Error('Could not reach Veridex server');
   },
 
-  // Check health
   health: async (): Promise<boolean> => {
-    const response = await fetch(`${API_BASE}/health`);
-    const data = await response.json();
-    return response.ok && data.status === 'healthy';
-  },
-
-  // Set API key
-  setApiKey: async (key: string): Promise<void> => {
-    await storage.set({ apiKey: key });
+    try {
+      const baseUrl = await api.getApiBase();
+      const response = await fetch(`${baseUrl}/health`);
+      return response.ok;
+    } catch {
+      return false;
+    }
   },
 };

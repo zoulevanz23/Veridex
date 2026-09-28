@@ -1,94 +1,10 @@
-// Veridex Content Script (Manifest V3)
-// Features:
-// 1. Text Selection Highlight Trigger: Shows a floating "Check with Veridex" pill when user highlights text.
-// 2. In-Page Verdict Card: Displays forensic verification result card styled in Veridex Examination Desk theme.
-
+// Veridex Content Script (Manifest V3 - Pure JS for unpacked extension)
 (function () {
-  if ((window as any).__veridexInjected) return;
-  (window as any).__veridexInjected = true;
+  if (window.__veridexInjected) return;
+  window.__veridexInjected = true;
 
-  let floatingTrigger: HTMLButtonElement | null = null;
+  let floatingTrigger = null;
   let activeSelectedText = '';
-
-  // ---- Phrase highlight: wrap the remembered range in a lamp-tinted mark ----
-  let activeRange: Range | null = null;
-  let highlightMark: HTMLElement | null = null;
-
-  function rememberSelection() {
-    try {
-      const selection = window.getSelection();
-      if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
-        activeRange = null;
-        return;
-      }
-      activeRange = selection.getRangeAt(0).cloneRange();
-    } catch (e) {
-      activeRange = null;
-    }
-  }
-
-  function highlightPhrase(): HTMLElement | null {
-    if (highlightMark) highlightMark.remove();
-    highlightMark = null;
-    if (!activeRange) return null;
-    try {
-      const mark = document.createElement('mark');
-      mark.className = 'veridex-phrase-mark';
-      mark.textContent = activeRange.toString();
-      activeRange.deleteContents();
-      activeRange.insertNode(mark);
-      highlightMark = mark;
-      return mark;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function clearPhraseHighlight() {
-    if (highlightMark && highlightMark.parentNode) {
-      const parent = highlightMark.parentNode;
-      const text = document.createTextNode(highlightMark.textContent || '');
-      parent.replaceChild(text, highlightMark);
-      highlightMark = null;
-    }
-    if (activeRange) {
-      try { window.getSelection().removeAllRanges(); } catch (e) {}
-      activeRange = null;
-    }
-  }
-
-  // ---- Inline verdict chip pinned to the highlighted phrase ----
-  function showInlineVerdict(data: { verdict?: string; confidence?: number }, anchorMark: HTMLElement | null) {
-    const existing = document.getElementById('veridex-inline-chip');
-    existing && existing.remove();
-    if (!anchorMark) anchorMark = highlightMark;
-    if (!anchorMark || typeof anchorMark.getBoundingClientRect !== 'function') return;
-
-    const v = (data.verdict || 'SAFE').toLowerCase();
-    const chip = document.createElement('div');
-    chip.id = 'veridex-inline-chip';
-    chip.className = 'veridex-inline-chip ' + v;
-    chip.innerHTML =
-      '<span class="veridex-inline-chip-label">VERDICT</span>' +
-      '<span class="veridex-inline-chip-verdict">' + String(data.verdict || 'SAFE').toUpperCase() + '</span>' +
-      '<span class="veridex-inline-chip-conf">' + Math.round(data.confidence || 0) + '%</span>';
-    document.body.appendChild(chip);
-
-    const rect = anchorMark.getBoundingClientRect();
-    const posX = Math.min(rect.left + window.scrollX, document.documentElement.scrollWidth - chip.offsetWidth - 12);
-    chip.style.left = `${Math.max(8, posX)}px`;
-    chip.style.top = `${rect.bottom + window.scrollY + 6}px`;
-    chip.classList.add('visible');
-
-    chip.addEventListener('click', () => {
-      const ui = getUI();
-      if (ui) {
-ui.indicator.classList.remove('dismissed');
-    ui.indicator.classList.add('visible');
-    showInlineVerdict(data, null);
-  }
-    });
-  }
 
   // Floating trigger button for text selection
   function ensureFloatingTrigger() {
@@ -135,11 +51,11 @@ ui.indicator.classList.remove('dismissed');
     return floatingTrigger;
   }
 
-  function showFloatingTriggerAt(x: number, y: number, text: string) {
+  function showFloatingTriggerAt(x, y, text) {
     const btn = ensureFloatingTrigger();
     activeSelectedText = text;
-    btn.style.left = `${Math.max(10, x - 60)}px`;
-    btn.style.top = `${Math.max(10, y)}px`;
+    btn.style.left = Math.max(10, x - 60) + 'px';
+    btn.style.top = Math.max(10, y) + 'px';
     btn.classList.add('visible');
   }
 
@@ -149,7 +65,86 @@ ui.indicator.classList.remove('dismissed');
     }
   }
 
-  // Handle selection on page
+  // ---- Phrase highlight: wrap the remembered range in a lamp-tinted mark ----
+  let activeRange = null;
+  let highlightMark = null;
+
+  function rememberSelection() {
+    try {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+        activeRange = null;
+        return;
+      }
+      activeRange = selection.getRangeAt(0).cloneRange();
+    } catch (e) {
+      activeRange = null;
+    }
+  }
+
+  function highlightPhrase() {
+    highlightMark && highlightMark.remove();
+    highlightMark = null;
+    if (!activeRange) return;
+    try {
+      const mark = document.createElement('mark');
+      mark.className = 'veridex-phrase-mark';
+      mark.textContent = activeRange.toString();
+      activeRange.deleteContents();
+      activeRange.insertNode(mark);
+      highlightMark = mark;
+      return mark;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function clearPhraseHighlight() {
+    if (highlightMark && highlightMark.parentNode) {
+      const parent = highlightMark.parentNode;
+      const text = document.createTextNode(highlightMark.textContent || '');
+      parent.replaceChild(text, highlightMark);
+      highlightMark = null;
+    }
+    if (activeRange) {
+      try { window.getSelection().removeAllRanges(); } catch (e) {}
+      activeRange = null;
+    }
+  }
+
+  // ---- Inline verdict chip pinned to the highlighted phrase ----
+  function showInlineVerdict(data, anchorMark) {
+    const existing = document.getElementById('veridex-inline-chip');
+    existing && existing.remove();
+    if (!anchorMark) anchorMark = highlightMark;
+    if (!anchorMark || typeof anchorMark.getBoundingClientRect !== 'function') return;
+
+    const v = (data.verdict || 'SAFE').toLowerCase();
+    const chip = document.createElement('div');
+    chip.id = 'veridex-inline-chip';
+    chip.className = 'veridex-inline-chip ' + v;
+    chip.innerHTML =
+      '<span class="veridex-inline-chip-label">VERDICT</span>' +
+      '<span class="veridex-inline-chip-verdict">' + String(data.verdict || 'SAFE').toUpperCase() + '</span>' +
+      '<span class="veridex-inline-chip-conf">' + Math.round(data.confidence || 0) + '%</span>';
+    document.body.appendChild(chip);
+
+    const rect = anchorMark.getBoundingClientRect();
+    const posX = Math.min(rect.left + window.scrollX, document.documentElement.scrollWidth - chip.offsetWidth - 12);
+    chip.style.left = Math.max(8, posX) + 'px';
+    chip.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+    chip.classList.add('visible');
+
+    chip.addEventListener('click', () => {
+      const ui = getUI();
+      if (ui) {
+        ui.indicator.classList.remove('dismissed');
+        ui.indicator.classList.add('visible');
+      }
+    });
+  }
+
+  // Handle selection on page plus keep a visible highlight while checking
   function handleSelectionChange() {
     setTimeout(() => {
       try {
@@ -185,7 +180,7 @@ ui.indicator.classList.remove('dismissed');
     }
   });
   document.addEventListener('mousedown', (e) => {
-    if (floatingTrigger && !floatingTrigger.contains(e.target as Node)) {
+    if (floatingTrigger && !floatingTrigger.contains(e.target)) {
       hideFloatingTrigger();
     }
   });
@@ -255,7 +250,7 @@ ui.indicator.classList.remove('dismissed');
     };
   }
 
-  function showAnalyzing(text: string) {
+  function showAnalyzing(text) {
     const ui = getUI();
     if (!ui) return;
     ui.indicator.className = 'veridex-safety-indicator visible';
@@ -264,31 +259,31 @@ ui.indicator.classList.remove('dismissed');
       ui.stampEl.textContent = 'ANALYZING…';
     }
     if (ui.confidenceEl) ui.confidenceEl.textContent = 'Scanning…';
-    if (ui.snippetEl) ui.snippetEl.textContent = `"${text.slice(0, 140)}${text.length > 140 ? '…' : ''}"`;
+    if (ui.snippetEl) ui.snippetEl.textContent = '"' + text.slice(0, 140) + (text.length > 140 ? '…' : '') + '"';
     if (ui.explanationEl) ui.explanationEl.textContent = 'Running Veridex forensic checks and risk model evaluation…';
     if (ui.signalsListEl) ui.signalsListEl.innerHTML = '<div class="veridex-signal-item"><div class="veridex-signal-dot"></div><div>Analyzing structural features…</div></div>';
     ui.indicator.classList.remove('dismissed');
     ui.indicator.classList.add('visible');
   }
 
-  function updateUI(data: { verdict: string; confidence: number; signals: string[]; explanation?: string; query?: string }) {
+  function updateUI(data) {
     const ui = getUI();
     if (!ui) return;
 
     const v = (data.verdict || 'SAFE').toLowerCase();
-    ui.indicator.className = `veridex-safety-indicator visible ${v}`;
+    ui.indicator.className = 'veridex-safety-indicator visible ' + v;
 
     if (ui.stampEl) {
-      ui.stampEl.className = `veridex-stamp ${v}`;
-      ui.stampEl.textContent = `VERDICT: ${data.verdict.toUpperCase()}`;
+      ui.stampEl.className = 'veridex-stamp ' + v;
+      ui.stampEl.textContent = 'VERDICT: ' + (data.verdict || 'SAFE').toUpperCase();
     }
 
     if (ui.confidenceEl) {
-      ui.confidenceEl.textContent = `Confidence: ${data.confidence}%`;
+      ui.confidenceEl.textContent = 'Confidence: ' + (data.confidence || 0) + '%';
     }
 
     if (data.query && ui.snippetEl) {
-      ui.snippetEl.textContent = `"${data.query.slice(0, 140)}${data.query.length > 140 ? '…' : ''}"`;
+      ui.snippetEl.textContent = '"' + data.query.slice(0, 140) + (data.query.length > 140 ? '…' : '') + '"';
     }
 
     if (ui.explanationEl) {
@@ -300,17 +295,18 @@ ui.indicator.classList.remove('dismissed');
       ui.signalsListEl.innerHTML = signals.map(s => `
         <div class="veridex-signal-item">
           <div class="veridex-signal-dot"></div>
-          <div>${s.replace(/</g, '&lt;')}</div>
+          <div>${String(s).replace(/</g, '&lt;')}</div>
         </div>
       `).join('');
     }
 
     ui.indicator.classList.remove('dismissed');
     ui.indicator.classList.add('visible');
+    showInlineVerdict(data, null);
   }
 
   // Handle messages from extension background
-  chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.type === 'veridex-ping') {
       sendResponse({ ok: true });
       return true;
@@ -320,7 +316,7 @@ ui.indicator.classList.remove('dismissed');
       let text = (message.text || message.url || '').trim();
       rememberSelection();
       if (!text) {
-        try { text = window.getSelection()?.toString().trim() || ''; } catch {}
+        try { text = window.getSelection().toString().trim(); } catch {}
       }
       if (text) {
         highlightPhrase();

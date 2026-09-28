@@ -1,12 +1,11 @@
-// Veridex Background Service Worker (Manifest V3)
-// Handles context menus, selection verification, API calls, and notifications
+// Veridex Background Service Worker (Manifest V3 - Pure JS)
 
 const ANALYZE_ENDPOINTS = [
   'http://localhost:5000/api/analyze',
   'http://localhost:5000/analyze'
 ];
 
-function getBackendBase(): Promise<string> {
+function getBackendBase() {
   return new Promise((resolve) => {
     try {
       chrome.storage.local.get(['veridex-storage', 'veridex-backend'], (result) => {
@@ -26,7 +25,7 @@ function getBackendBase(): Promise<string> {
   });
 }
 
-async function getAnalyzeEndpoints(): Promise<string[]> {
+async function getAnalyzeEndpoints() {
   const base = await getBackendBase();
   if (base === 'http://localhost:5000') return ANALYZE_ENDPOINTS;
   return [`${base}/api/analyze`, `${base}/analyze`];
@@ -65,7 +64,7 @@ chrome.runtime.onStartup.addListener(() => {
   setupContextMenus();
 });
 
-async function ensureContentScript(tabId: number): Promise<boolean> {
+async function ensureContentScript(tabId) {
   try {
     await chrome.tabs.sendMessage(tabId, { type: 'veridex-ping' });
     return true;
@@ -82,7 +81,7 @@ async function ensureContentScript(tabId: number): Promise<boolean> {
         });
       } catch {}
       return true;
-    } catch (err: any) {
+    } catch (err) {
       console.warn('[Veridex] Cannot inject content script:', err?.message || err);
       return false;
     }
@@ -93,7 +92,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!tab || tab.id == null) return;
 
   let text = '';
-  let contentType: 'message' | 'link' | 'image' = 'message';
+  let contentType = 'message';
 
   if (info.menuItemId === 'verify-selection') {
     text = (info.selectionText || '').trim();
@@ -111,7 +110,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       try {
         const fetched = await fetch(src);
         if (fetched.ok) {
-          text = await blobToBase64(await fetched.blob());
+          const blob = await fetched.blob();
+          text = await blobToBase64(blob);
         } else {
           text = src;
         }
@@ -131,18 +131,18 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
   const ok = await ensureContentScript(tab.id);
   if (!ok) {
-    notify('Veridex', 'Cannot analyze this page (restricted page or no content script). Reload the tab.');
+    notify('Veridex', 'Cannot analyze this page (restricted page or no content script). Try reloading the page.');
     return;
   }
   try {
     await chrome.tabs.sendMessage(tab.id, { type: 'verify-link', text, contentType, url: text });
   } catch (err) {
     console.error('[Veridex] Failed to send verify-link:', err);
-    notify('Veridex', 'Could not reach page content. Please reload the tab.');
+    notify('Veridex', 'Could not reach the page. Please reload the tab and try again.');
   }
 });
 
-function blobToBase64(blob: Blob): Promise<string> {
+function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
@@ -151,7 +151,7 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-function notify(title: string, message: string) {
+function notify(title, message) {
   try {
     chrome.notifications.create({
       type: 'basic',
@@ -160,17 +160,17 @@ function notify(title: string, message: string) {
       message: String(message || '').slice(0, 180)
     }, () => {
       if (chrome.runtime.lastError) {
-        console.warn('[Veridex] Notification warning:', chrome.runtime.lastError.message);
+        console.warn('[Veridex] notification failed:', chrome.runtime.lastError.message);
       }
     });
-  } catch (err: any) {
-    console.warn('[Veridex] Notification error:', err?.message || err);
+  } catch (err) {
+    console.warn('[Veridex] notification error:', err?.message || err);
   }
 }
 
-async function postAnalyze(text: string, contentType: string) {
+async function postAnalyze(text, contentType) {
   const endpoints = await getAnalyzeEndpoints();
-  let lastError: Error | null = null;
+  let lastError = null;
   for (const endpoint of endpoints) {
     try {
       const r = await fetch(endpoint, {
@@ -185,7 +185,7 @@ async function postAnalyze(text: string, contentType: string) {
         continue;
       }
       return { ok: false, data, status: r.status };
-    } catch (err: any) {
+    } catch (err) {
       lastError = err;
       continue;
     }
@@ -193,13 +193,13 @@ async function postAnalyze(text: string, contentType: string) {
   throw lastError || new Error('Analysis request failed');
 }
 
-function guessContentType(text: string): 'message' | 'link' | 'image' {
+function guessContentType(text) {
   if (text.startsWith('data:image/') || /\.(png|jpg|jpeg|webp|gif)(\?.*)?$/i.test(text)) return 'image';
   if (/https?:\/\/[^\s]+/i.test(text) && text.trim().length < 2000) return 'link';
   return 'message';
 }
 
-chrome.runtime.onMessage.addListener((message: any, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'analyze-selection') {
     const text = (message.text || '').trim();
     if (!text) {
@@ -247,7 +247,7 @@ chrome.runtime.onMessage.addListener((message: any, sender, sendResponse) => {
       })
       .catch(err => {
         console.error('[Veridex] Analysis error:', err);
-        const errMsg = 'Cannot reach Veridex server on port 5000. Please start the backend.';
+        const errMsg = 'Cannot reach Veridex server on port 5000. Start the backend with npm run dev.';
         notify('Veridex', errMsg);
         if (tabId != null) {
           chrome.tabs.sendMessage(tabId, {

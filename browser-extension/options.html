@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veridex - Extension Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="settings-header">
+      <div class="brand-title">
+        <svg class="brand-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        <span>VERIDEX SETTINGS</span>
+      </div>
+      <p class="subtitle">Manage backend configuration, triggers, and display preferences</p>
+    </header>
+
+    <section class="card-section">
+      <h3>Backend Configuration</h3>
+      <p class="section-desc">Specify your local or remote Veridex API server address.</p>
+      <div class="form-group">
+        <label for="backendUrl">Backend Server URL</label>
+        <input type="text" id="backendUrl" class="text-input" placeholder="http://localhost:5000">
+      </div>
+      <div class="form-group">
+        <label for="apiKey">API Key (Optional)</label>
+        <input type="password" id="apiKey" class="text-input" placeholder="Enter custom API key if required...">
+      </div>
+      <button id="saveBtn" class="primary-btn">Save Configuration</button>
+    </section>
+
+    <section class="card-section">
+      <h3>In-Page Triggers & Floating UI</h3>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="showSelectionTooltip" checked>
+        <label class="form-check-label" for="showSelectionTooltip">
+          Show floating "Check with Veridex" button when highlighting text on any website
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="showIndicator" checked>
+        <label class="form-check-label" for="showIndicator">
+          Show in-page Veridex Examination card when analysis finishes
+        </label>
+      </div>
+    </section>
+
+    <section class="card-section about">
+      <h3>About Veridex Extension</h3>
+      <p>Veridex AI Verification Assistant • Version 1.0.0</p>
+      <p>Instant forensic analysis for claims, links, text phrases, and synthetic media.</p>
+    </section>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
