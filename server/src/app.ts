@@ -36,7 +36,7 @@ app.use(cors({
     logger.warn({ origin, allowedOrigins }, 'CORS blocked but allowing for debugging');
     return cb(null, true);
   },
-  credentials: true,
+  credentials: false,
 }));
 
 // Rate limit global

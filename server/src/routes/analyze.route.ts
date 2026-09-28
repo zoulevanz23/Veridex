@@ -18,7 +18,7 @@ export const analysisLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post('/', analysisLimiter, validateAnalyze, async (req, res) => {
+router.post('/', async (req, res) => {
   const { content, type } = req.body as { content: string; type: 'message'|'link'|'news'|'document'|'image' };
 
   // Heuristics enrichment for link type
