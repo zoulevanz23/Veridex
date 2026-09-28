@@ -11,16 +11,17 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 const variantClasses: Record<Variant, string> = {
-  primary: 'bg-blue-700 text-white border-blue-700 shadow-md hover:bg-blue-600',
-  secondary: 'bg-white text-slate-900 border-slate-200 hover:bg-slate-50',
-  ghost: 'bg-transparent text-slate-600 border-transparent hover:text-slate-900',
+  primary: 'text-white border-transparent',
+  secondary: 'text-[var(--ink)] border-[var(--line)] bg-[var(--surface)]',
+  ghost: 'text-[var(--ink-soft)] border-transparent',
 }
 
 export default function Button({ variant = 'primary', to, icon, children, className, disabled, ...rest }: Props) {
   const baseClasses = cn(
-    'inline-flex items-center gap-2 px-5 py-3 font-bold text-sm leading-none rounded-full border transition-colors',
+    'inline-flex items-center gap-2 px-5 py-2.5 font-semibold text-sm leading-none rounded-sm border transition-colors cursor-pointer',
     variantClasses[variant],
-    disabled && 'opacity-60 cursor-not-allowed bg-slate-100 text-slate-400 border-slate-200 shadow-none',
+    disabled && 'opacity-50 cursor-not-allowed',
+    variant === 'primary' && !disabled && 'bg-[var(--ink)] hover:bg-[#000] border-[var(--ink)]',
     className
   )
 

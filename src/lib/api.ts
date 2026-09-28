@@ -15,22 +15,11 @@ export interface AnalysisResponse {
 export type AnalysisContentType = 'message' | 'link' | 'news' | 'document' | 'image'
 
 // Client-side Heuristic Engine (Fallback when backend is offline or returns server error)
+// NOTE: This is ONLY for text-based content. Image analysis requires the backend's
+// multimodal AI and cannot be meaningfully done client-side.
 function localHeuristicAnalysis(content: string, type: AnalysisContentType): AnalysisResponse['result'] {
   const signals: string[] = []
   let score = 0
-
-  if (type === 'image' || content.startsWith('data:image')) {
-    return {
-      verdict: 'QUESTIONABLE',
-      confidence: 0,
-      explanation: 'AI image detection service is currently unavailable. Unable to perform forensic analysis. Please try again later.',
-      signals: [
-        'Service unavailable - backend connection failed',
-        'Cannot verify image authenticity at this time'
-      ],
-      rawText: '[Image Content Analyzed]'
-    }
-  }
 
   // URL checks
   if (type === 'link' || /https?:\/\/[^\s]+/i.test(content)) {
@@ -118,11 +107,20 @@ export const analyzeContent = async (
       }
     }
     
-    // If backend returns 500, 404, or unparseable payload, fallback to local heuristics engine
+    // For image analysis, do NOT fall back to local heuristics — they cannot
+    // actually inspect pixels and would return a meaningless result.
+    if (type === 'image' || content.startsWith('data:image')) {
+      throw new Error('Image scanning is not available right now. Please make sure the Veridex server is running and try again.')
+    }
+    
+    // For text-based types, fall back to local heuristics engine
     console.warn(`Backend responded with status ${res.status}. Utilizing client-side heuristic engine.`)
     return localHeuristicAnalysis(content, type)
 
   } catch (error: unknown) {
+    if (type === 'image' || content.startsWith('data:image')) {
+      throw new Error('Image scanning is not available right now. Please make sure the Veridex server is running and try again.')
+    }
     console.warn('Backend API connection unavailable, falling back to local heuristic engine:', error)
     return localHeuristicAnalysis(content, type)
   } finally {

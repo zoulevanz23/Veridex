@@ -1,105 +1,65 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import Button from '../components/ui/Button'
+import { User, LogOut, Shield } from 'lucide-react'
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
-  useEffect(() => {
-    // Check if user is authenticated via token
-    const token = localStorage.getItem('truthcheck-auth-token')
-    if (!token) {
-      navigate('/signin')
-      return
-    }
-
-    fetch('/api/user/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Not authenticated')
-        return res.json()
-      })
-      .then((data) => {
-        setUser(data.user)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setError(err.message)
-        setLoading(false)
-        // Clear invalid token
-        localStorage.removeItem('truthcheck-auth-token')
-        localStorage.removeItem('truthcheck-user')
-        navigate('/signin')
-      })
-  }, [navigate])
-
-  if (loading) {
+  if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="p-4 text-center">Loading profile…
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md text-sm mb-4">
-          {error}
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+          <Shield className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Guest Account</h2>
+          <p className="text-sm text-slate-600 mb-6">
+            You are currently using Veridex as a guest. Sign in to save preferences and get unlimited checks.
+          </p>
+          <Button to="/signin" variant="primary" className="w-full justify-center">
+            Sign In to Veridex
+          </Button>
         </div>
-        <Button to="/signin" className="block w-full py-2.5 px-4 font-medium text-center text-white bg-slate-900 rounded-md hover:bg-slate-800 transition-colors">
-          Go to sign in
-        </Button>
       </div>
     )
   }
 
   return (
-    <div className="max-w-md w-full bg-white rounded-xl shadow-xl p-8">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Profile</h2>
-
-      {user ? (
-        <div>
-          <div className="mb-4">
-            <Label className="block text-sm font-medium text-slate-600 mb-2" htmlFor="email">
-              Email
-            </Label>
-            <p className="p-2 bg-slate-50 rounded-md font-mono" style={{ wordBreak: 'break-all' }}>{user.email}</p>
+    <div className="max-w-md mx-auto my-12 p-6">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+          <div className="w-14 h-14 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-700 font-bold text-xl">
+            {user.avatar ? (
+              <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <User size={24} />
+            )}
           </div>
-
-          {user.name && (
-            <div className="mb-4">
-              <Label className="block text-sm font-medium text-slate-600 mb-2" htmlFor="name">
-                Display name
-              </Label>
-              <p className="p-2 bg-slate-50 rounded-md font-mono">{user.name}</p>
-            </div>
-          )}
-
-          <div className="mb-4">
-            <Label className="block text-sm font-medium text-slate-600 mb-2" htmlFor="createdAt">
-              Member since
-            </Label>
-            <p className="text-sm text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</p>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 m-0">{user.name}</h2>
+            <p className="text-xs font-mono text-slate-500 m-0">{user.email}</p>
           </div>
         </div>
-      ) : (
-        <p className="text-slate-500 text-center">Unable to load profile.</p>
-      )}
 
-      <div className="mt-8 text-center">
-        <Link to="/settings" className="text-slate-500 hover:text-slate-900 font-medium transition-colors">
-          Settings
-        </Link>
-        <Link to="/signin" className="mt-2 text-slate-500 hover:text-slate-900 font-medium transition-colors block">
-          Sign out
-        </Link>
+        <div className="space-y-4">
+          <div>
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Account Type</span>
+            <p className="text-sm font-semibold text-slate-900 mt-1 capitalize">{user.provider || 'Veridex Account'} (Unlimited Checks)</p>
+          </div>
+
+          <div>
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Checks Performed</span>
+            <p className="text-sm font-semibold text-slate-900 mt-1 font-mono">{user.usageCount || 0} analyses</p>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col gap-3">
+          <button
+            onClick={logout}
+            className="w-full py-2.5 px-4 font-semibold text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer bg-white"
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
+        </div>
       </div>
     </div>
   )

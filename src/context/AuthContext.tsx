@@ -35,8 +35,8 @@ interface AuthContextType {
 }
 
 const GUEST_CREDITS_KEY = 'veridex_guest_credits_v1'
-const TOKEN_KEY = 'truthcheck-auth-token'
-const USER_KEY = 'truthcheck-user'
+const TOKEN_KEY = 'veridex-auth-token'
+const USER_KEY = 'veridex-user'
 const DEFAULT_CREDITS = 10
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

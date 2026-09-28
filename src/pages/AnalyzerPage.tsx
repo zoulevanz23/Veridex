@@ -3,33 +3,53 @@ import { ShieldCheck } from 'lucide-react'
 
 const AnalyzerPage = () => {
   return (
-    <div className="bg-slate-50 min-h-[calc(100vh-56px)]">
-      <div className="max-w-[1120px] mx-auto px-6 py-12 pb-16">
-        <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
-          <span className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-2 py-1 font-semibold">
-            <ShieldCheck size={14} /> Privacy-first • No data stored
-          </span>
-          <span className="text-slate-300">•</span>
-          <span>Results in seconds</span>
-        </div>
-
-        <InputForm />
-
-        <div className="max-w-[720px] mx-auto mt-8 grid grid-cols-2 gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="text-xs font-bold tracking-wider uppercase text-slate-500 mb-1.5">How it works</div>
-            <ol className="m-0 pl-4.5 text-sm text-slate-600 leading-relaxed">
-              <li>Choose type and paste content</li>
-              <li>We run heuristic and AI checks</li>
-              <li>Get verdict, confidence and signals</li>
-            </ol>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="text-xs font-bold tracking-wider uppercase text-slate-500 mb-1.5">Trust & privacy</div>
-            <p className="m-0 text-sm text-slate-600 leading-relaxed">No login. Content is analyzed and discarded. Rate-limited and validated on the server. Always cross-check important decisions.</p>
+    <div style={{ background: 'var(--paper)', color: 'var(--ink)', minHeight: 'calc(100vh - 56px)' }}>
+      <section className="paper-grain" style={{ borderBottom: '1px solid var(--line)' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '64px 24px 48px' }}>
+          <p className="font-serif-display text-[15px]" style={{ color: 'var(--ink-soft)', maxWidth: '68ch', margin: '0 0 16px' }}>
+            A short check with a clear output.
+          </p>
+          <h1 className="font-serif-display" style={{ color: 'var(--ink)', fontSize: 'clamp(28px,4vw,38px)', lineHeight: 1.15, maxWidth: '24ch', margin: 0 }}>
+            What do you want to verify?
+          </h1>
+          <p className="font-serif-display" style={{ color: 'var(--ink)', fontSize: 18, lineHeight: 1.6, maxWidth: '68ch', marginTop: 18 }}>
+            Paste a message, link, article, document or image. Veridex returns the same shape every time — verdict, confidence, explanation and signals.
+          </p>
+          <div className="mt-6">
+            <span
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-instrument font-semibold"
+              style={{ background: 'var(--surface)', color: 'var(--safe)', border: '1px solid var(--line)' }}
+            >
+              <ShieldCheck size={14} /> Privacy-first · No data stored
+            </span>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '56px 24px' }}>
+          <InputForm />
+        </div>
+      </section>
+
+      <section className="paper-grain" style={{ borderTop: '1px solid var(--line)' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '56px 24px' }}>
+          <div className="grid gap-x-10 gap-y-10 md:grid-cols-2" style={{ maxWidth: 900 }}>
+            <div>
+              <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>How it works</h3>
+              <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                Transparent heuristics run first, then a structured model check reads the full context and returns the same output shape every time.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>Trust & privacy</h3>
+              <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                No login. Content is analyzed and discarded. Rate-limited and validated on the server. Always cross-check important decisions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

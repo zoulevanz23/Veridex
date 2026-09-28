@@ -8,9 +8,9 @@ const label: Record<Verdict,string> = {
   SAFE:'Safe', TRUSTWORTHY:'Trustworthy', SUSPICIOUS:'Suspicious', QUESTIONABLE:'Questionable', SCAM:'Likely scam', LIKELY_FAKE:'Likely fake'
 }
 const tone = (v: Verdict) => {
-  if (v==='SAFE' || v==='TRUSTWORTHY') return { bg:'bg-green-50', border:'border-green-200', color:'text-green-600', Icon: ShieldCheck }
-  if (v==='SCAM' || v==='LIKELY_FAKE') return { bg:'bg-red-50', border:'border-red-200', color:'text-red-600', Icon: ShieldX }
-  return { bg:'bg-amber-50', border:'border-amber-200', color:'text-amber-600', Icon: ShieldAlert }
+  if (v==='SAFE' || v==='TRUSTWORTHY') return { bg:'rgba(30,127,92,0.1)', border:'rgba(30,127,92,0.25)', color:'var(--safe)', Icon: ShieldCheck }
+  if (v==='SCAM' || v==='LIKELY_FAKE') return { bg:'rgba(168,64,42,0.1)', border:'rgba(168,64,42,0.25)', color:'var(--scam)', Icon: ShieldX }
+  return { bg:'rgba(228,166,27,0.12)', border:'rgba(228,166,27,0.3)', color:'var(--suspicious)', Icon: ShieldAlert }
 }
 
 export default function ResultCard({ result }: Props) {
@@ -24,70 +24,66 @@ export default function ResultCard({ result }: Props) {
   const share = async () => {
     const text = `Verdict: ${label[result.verdict]} — ${result.explanation.slice(0,120)}`
     try {
-      if ((navigator as any).share) await (navigator as any).share({ title:'TruthCheck result', text })
+      if ((navigator as any).share) await (navigator as any).share({ title:'Veridex result', text })
       else await navigator.clipboard.writeText(text)
     } catch {}
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-      {/* Header — verdict is primary */}
-      <div className="px-5 py-5 pb-4 border-b border-slate-100">
+    <div className="rounded-sm overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--line)' }}>
+      <div className="px-5 py-5 pb-4" style={{ borderBottom: '1px solid var(--line)' }}>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex gap-3 items-center">
-            <span className={`w-9 h-9 rounded-lg inline-flex items-center justify-center ${t.bg} border ${t.border} ${t.color}`}>
+            <span className="w-9 h-9 rounded-sm inline-flex items-center justify-center" style={{ background: t.bg, border: `1px solid ${t.border}`, color: t.color }}>
               <t.Icon size={18} strokeWidth={2} />
             </span>
             <div>
-              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Analysis complete</div>
-              <div className="text-[22px] font-extrabold tracking-tight text-slate-900 leading-tight">{label[result.verdict]}</div>
+              <div className="text-[11px] font-instrument font-semibold" style={{ color: 'var(--ink-soft)' }}>Analysis complete</div>
+              <div className="text-[22px] font-instrument font-bold tracking-tight leading-tight" style={{ color: 'var(--ink)' }}>{label[result.verdict]}</div>
             </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={copy} aria-label="Copy result" className="w-9 h-9 rounded-lg border border-slate-200 bg-white inline-flex items-center justify-center cursor-pointer hover:bg-slate-50"><Copy size={16} className="text-slate-600" /></button>
-            <button onClick={share} aria-label="Share result" className="w-9 h-9 rounded-lg border border-slate-200 bg-white inline-flex items-center justify-center cursor-pointer hover:bg-slate-50"><Share2 size={16} className="text-slate-600" /></button>
+            <button onClick={copy} aria-label="Copy result" className="w-9 h-9 rounded-sm inline-flex items-center justify-center cursor-pointer" style={{ border: '1px solid var(--line)', background: 'var(--paper)', color: 'var(--ink-soft)' }}><Copy size={16} /></button>
+            <button onClick={share} aria-label="Share result" className="w-9 h-9 rounded-sm inline-flex items-center justify-center cursor-pointer" style={{ border: '1px solid var(--line)', background: 'var(--paper)', color: 'var(--ink-soft)' }}><Share2 size={16} /></button>
           </div>
         </div>
 
-        {/* Confidence — secondary, monospace */}
         <div className="mt-4">
           <div className="flex justify-between items-baseline mb-1.5">
-            <span className="text-xs font-semibold text-slate-600">Confidence</span>
-            <span className="font-mono text-sm font-semibold text-slate-900">{pct}%</span>
+            <span className="text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>Confidence</span>
+            <span className="font-mono text-sm font-semibold" style={{ color: 'var(--ink)' }}>{pct}%</span>
           </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div className={cn('h-full rounded-full transition-all duration-600', t.color)} style={{ width:`${pct}%` }} />
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--paper)' }}>
+            <div className={cn('h-full rounded-full transition-all duration-600')} style={{ width:`${pct}%`, background: t.color }} />
           </div>
-          <div className="text-xs text-slate-400 mt-1.5">
+          <div className="text-xs mt-1.5" style={{ color: 'var(--ink-soft)' }}>
             {pct >= 80 ? 'High certainty' : pct >= 55 ? 'Moderate certainty' : 'Low certainty — verify with additional sources'}
           </div>
         </div>
       </div>
 
-      {/* Explanation — body */}
       <div className="px-5 py-4">
-        <div className="text-xs font-bold tracking-wider uppercase text-slate-500 mb-2">What this means</div>
-        <p className="m-0 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{result.explanation}</p>
+        <div className="text-xs font-instrument font-semibold mb-2" style={{ color: 'var(--ink-soft)' }}>What this means</div>
+        <p className="m-0 font-serif-display text-[16px] leading-[1.7] whitespace-pre-wrap" style={{ color: 'var(--ink)' }}>{result.explanation}</p>
       </div>
 
-      {/* Signals — tertiary, divider list */}
       {result.signals?.length > 0 && (
         <div className="px-5 pb-4">
-          <div className="text-xs font-bold tracking-wider uppercase text-slate-500 mb-2">Why this result</div>
-          <div className="border border-slate-200 rounded-lg overflow-hidden">
+          <div className="text-xs font-instrument font-semibold mb-2" style={{ color: 'var(--ink-soft)' }}>Why this result</div>
+          <div className="rounded-sm overflow-hidden" style={{ border: '1px solid var(--line)' }}>
             {result.signals.slice(0,8).map((s,i) => (
-              <div key={i} className={`px-3 py-2.5 flex gap-2.5 items-start ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'} ${i !== 0 ? 'border-t border-slate-100' : ''}`}>
-                <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${t.color === 'text-green-600' ? 'bg-green-600' : t.color === 'text-red-600' ? 'bg-red-600' : 'bg-amber-600'}`} />
-                <span className="text-sm leading-relaxed text-slate-700">{s}</span>
+              <div key={i} className="px-3 py-2.5 flex gap-2.5 items-start" style={{ background: i % 2 === 0 ? 'var(--paper)' : 'var(--surface)', borderTop: i !== 0 ? '1px solid var(--line)' : 'none' }}>
+                <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: t.color }} />
+                <span className="font-serif-display text-[16px] leading-[1.7]" style={{ color: 'var(--ink)' }}>{s}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center gap-3 flex-wrap">
-        <span className="text-xs text-slate-400">Always verify from multiple sources.</span>
-        <span className="text-[11px] text-slate-400 font-mono">ID {String(Date.now()).slice(-6)} • {new Date().toLocaleDateString()}</span>
+      <div className="px-5 py-3 flex justify-between items-center gap-3 flex-wrap" style={{ background: 'var(--paper)', borderTop: '1px solid var(--line)' }}>
+        <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>Always verify from multiple sources.</span>
+        <span className="text-[11px] font-mono" style={{ color: 'var(--ink-soft)' }}>ID {String(Date.now()).slice(-6)} • {new Date().toLocaleDateString()}</span>
       </div>
     </div>
   )

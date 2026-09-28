@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Zap, LogOut, User as UserIcon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import ConfirmDialog from './ui/ConfirmDialog'
 
 const NAV = [
   { label: 'Verify', to: '/analyzer' },
@@ -13,7 +14,14 @@ const NAV = [
 export default function Header() {
   const location = useLocation()
   const [open, setOpen] = useState(false)
+  const [confirmLogout, setConfirmLogout] = useState(false)
   const { user, isLoggedIn, credits, usageCount, logout } = useAuth()
+
+  const handleLogout = () => {
+    setConfirmLogout(false)
+    setOpen(false)
+    logout()
+  }
 
   const isActive = (to: string) => to !== '/features#extension' && location.pathname === to.split('#')[0]
 
@@ -96,7 +104,7 @@ export default function Header() {
                 {user?.name}
               </span>
               <button
-                onClick={logout}
+                onClick={() => setConfirmLogout(true)}
                 className="p-1 rounded-sm transition-colors cursor-pointer"
                 style={{ color: 'var(--ink-soft)', background: 'none', border: 'none' }}
                 title="Sign out"
@@ -163,9 +171,9 @@ export default function Header() {
           ))}
           {isLoggedIn ? (
             <button
-              onClick={() => { logout(); setOpen(false) }}
-              className="font-sans text-sm text-left text-red-600 no-underline cursor-pointer"
-              style={{ background: 'none', border: 'none', padding: 0 }}
+              onClick={() => { setConfirmLogout(true) }}
+              className="font-sans text-sm text-left no-underline cursor-pointer"
+              style={{ background: 'none', border: 'none', padding: 0, color: 'var(--scam)' }}
             >
               Sign out ({user?.email})
             </button>
@@ -174,13 +182,23 @@ export default function Header() {
               <Link to="/signin" className="font-sans text-sm font-semibold" style={{ color: 'var(--ink)' }} onClick={() => setOpen(false)}>
                 Sign in
               </Link>
-              <Link to="/register" className="font-sans text-sm font-semibold text-emerald-700" onClick={() => setOpen(false)}>
+              <Link to="/register" className="font-sans text-sm font-semibold" style={{ color: 'var(--safe)' }} onClick={() => setOpen(false)}>
                 Create Account
               </Link>
             </div>
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmLogout}
+        title="Sign out?"
+        message="You will be switched to guest mode with 10 free checks. Your account will stay registered."
+        confirmLabel="Sign out"
+        cancelLabel="Stay signed in"
+        onConfirm={handleLogout}
+        onCancel={() => setConfirmLogout(false)}
+      />
     </header>
   )
 }

@@ -3,52 +3,60 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 import { Toaster } from 'react-hot-toast'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import { AuthProvider } from './context/AuthContext'
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Toaster
-      position="top-right"
-      toastOptions={{
-        style: {
-          background: 'var(--surface)',
-          color: 'var(--ink)',
-          border: '1px solid var(--line)',
-          borderRadius: '4px',
-          padding: '16px',
-          fontSize: '13px',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-          minWidth: '280px',
-          maxWidth: '380px',
-        },
-        success: {
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID ?? ''}>
+      <AuthProvider>
+      <Toaster
+        position="top-right"
+        toastOptions={{
           style: {
             background: 'var(--surface)',
-            borderLeft: '3px solid var(--safe)',
+            color: 'var(--ink)',
+            border: '1px solid var(--line)',
+            borderRadius: '4px',
+            padding: '16px',
+            fontSize: '13px',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            minWidth: '280px',
+            maxWidth: '380px',
           },
-          iconTheme: {
-            primary: 'var(--safe)',
-            secondary: 'white',
+          success: {
+            style: {
+              background: 'var(--surface)',
+              borderLeft: '3px solid var(--safe)',
+            },
+            iconTheme: {
+              primary: 'var(--safe)',
+              secondary: 'white',
+            },
           },
-        },
-        error: {
-          style: {
-            background: 'var(--surface)',
-            borderLeft: '3px solid var(--scam)',
+          error: {
+            style: {
+              background: 'var(--surface)',
+              borderLeft: '3px solid var(--scam)',
+            },
+            iconTheme: {
+              primary: 'var(--scam)',
+              secondary: 'white',
+            },
           },
-          iconTheme: {
-            primary: 'var(--scam)',
-            secondary: 'white',
+          loading: {
+            style: {
+              background: 'var(--surface)',
+              borderLeft: '3px solid #f59e0b',
+            },
           },
-        },
-        loading: {
-          style: {
-            background: 'var(--surface)',
-            borderLeft: '3px solid #f59e0b',
-          },
-        },
-      }}
-    />
-    <App />
+        }}
+      />
+      <App />
+    </AuthProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 )

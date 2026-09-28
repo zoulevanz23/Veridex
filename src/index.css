@@ -1,11 +1,254 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Archivo:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Veridex examination-desk tokens */
+:root {
+  --paper: #EDEEEA;
+  --surface: #F7F8F4;
+  --ink: #1B2027;
+  --ink-soft: #4C535C;
+  --line: #C9CCC3;
+  --lamp: #E4A61B;
+  --safe: #1E7F5C;
+  --suspicious: #B8860B;
+  --scam: #A8402A;
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply antialiased;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(228, 166, 27, 0.28);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--lamp);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  /* Serif reading face for long-form landing copy */
+  .font-serif-display {
+    font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+  }
+
+  /* Instrument face for labels, headings, and UI chrome */
+  .font-instrument {
+    font-family: 'Archivo', system-ui, sans-serif;
+  }
+
+  /* Surface background utility */
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  /* Paper grain for the evidence card */
+  .paper-grain {
+    background-color: var(--surface);
+    background-image: radial-gradient(rgba(27, 32, 39, 0.045) 1px, transparent 1px);
+    background-size: 5px 5px;
+  }
+
+  /* Perforated cut-line edge for the intake slip */
+  .perf-edge {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+  }
+  .perf-edge::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 7px;
+    border-left: 1px dashed var(--line);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  /* Orchestrated scan + stamp motion */
+  .animate-scan-down {
+    animation: scan-down 2.4s linear forwards;
+  }
+  .animate-stamp-in {
+    animation: stamp-in 0.45s cubic-bezier(0.2, 1.4, 0.3, 1) both;
+  }
+  .animate-flag-pop {
+    animation: flag-pop 0.5s cubic-bezier(0.2, 1.2, 0.3, 1) both;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.4s ease both;
+  }
+  .animate-hero-rise {
+    animation: hero-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-menu-in {
+    animation: menu-in 0.22s ease-out both;
+    transform-origin: top left;
+  }
+
+  /* Scroll-triggered section reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero split: text stays in the container, video runs to the viewport edge */
+  .hero-split {
+    display: grid;
+    gap: 40px;
+  }
+  .hero-split-text,
+  .hero-split-media {
+    min-width: 0;
+  }
+  .hero-split-text-inner {
+    padding: 40px 24px 8px;
+  }
+  .hero-split-media {
+    padding: 0 24px 48px;
+  }
+  .hero-split-video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  @media (min-width: 1024px) {
+    .hero-split {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 0;
+      align-items: center;
+    }
+    .hero-split-text-inner {
+      padding: 64px 56px 80px max(24px, calc((100vw - 1120px) / 2 + 24px));
+    }
+    .hero-split-media {
+      padding: 0 max(24px, calc((100vw - 1120px) / 2 + 24px)) 0 0;
+    }
+    .hero-split-video {
+      height: 440px;
+      object-fit: cover;
+    }
+  }
+
+  /* Hide scrollbar on the mobile folder-tab scroll row */
+  .tab-scroll {
+    scrollbar-width: none;
+  }
+  .tab-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes scan-down {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.25) rotate(-6deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.96) rotate(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-2deg);
+  }
+}
+
+@keyframes flag-pop {
+  from {
+    opacity: 0;
+    transform: rotate(var(--flag-rot, -1deg)) translateX(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--flag-rot, -1deg)) translateX(0) scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Collapse the scan/stamp choreography to an instant state change */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scan-down,
+  .animate-stamp-in,
+  .animate-flag-pop,
+  .animate-fade-in,
+  .animate-hero-rise,
+  .animate-menu-in {
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

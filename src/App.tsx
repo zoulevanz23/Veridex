@@ -5,6 +5,9 @@ import HomePage from './pages/HomePage.tsx'
 import AnalyzerPage from './pages/AnalyzerPage.tsx'
 import AboutPage from './pages/AboutPage.tsx'
 import FeaturesPage from './pages/FeaturesPage.tsx'
+import ExtensionPage from './pages/ExtensionPage.tsx'
+import SigninPage from './pages/SigninPage.tsx'
+import RegisterPage from './pages/RegisterPage.tsx'
 import React from 'react'
 
 // Simple global error boundary
@@ -30,6 +33,9 @@ function App() {
               <Route path="/analyzer" element={<AnalyzerPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/extension" element={<ExtensionPage />} />
+              <Route path="/signin" element={<SigninPage />} />
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
           </main>
           <Footer />

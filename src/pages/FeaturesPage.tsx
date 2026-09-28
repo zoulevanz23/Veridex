@@ -1,90 +1,142 @@
-import { ShieldCheck, Search, Link2, Mail, Newspaper } from 'lucide-react'
-import Button from '../components/ui/Button'
+import { Link } from 'react-router-dom'
+import { ShieldCheck } from 'lucide-react'
+
+const types = [
+  {
+    t: 'Message',
+    d: 'Urgent language, credential requests and sender mismatches — the reflexive check for an unexpected inbox.',
+  },
+  {
+    t: 'Link',
+    d: 'URL shape, shortening, redirects and risk-level domains before you click.',
+  },
+  {
+    t: 'Article',
+    d: 'Claim framing, sourcing and language that pressures a quick share.',
+  },
+  {
+    t: 'Document',
+    d: 'A pasted file, invoice or export read as a single object with the same structured output.',
+  },
+  {
+    t: 'Image',
+    d: 'Uploaded scans inspected for AI generation, deepfakes or digital manipulation, with the markers that led to the read.',
+  },
+]
+
+const commitments = [
+  'No account, no storage — content is validated, checked and discarded.',
+  'Confidence shown as a range, not a false-precision number.',
+  'Low certainty is stated and asks you to cross-check.',
+]
 
 export default function FeaturesPage() {
   return (
-    <div className="bg-slate-50">
-      <section className="bg-white border-b border-slate-200">
-        <div className="max-w-[1120px] mx-auto px-6 py-[72px_48px]">
-          <div className="max-w-[720px]">
-            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-3">How it works</div>
-            <h1 className="text-[clamp(28px,4vw,38px)] font-extrabold leading-tight tracking-tight text-slate-900 m-0">
-              A short check with a clear output.
-            </h1>
-            <p className="text-[17px] text-slate-600 leading-relaxed mt-3.5 max-w-[640px]">
-              Paste what you received. Get the same structure every time — verdict, confidence, explanation and signals. No chat, no extra steps.
-            </p>
-          </div>
+    <div style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
+      {/* Header */}
+      <section className="paper-grain" style={{ borderBottom: '1px solid var(--line)' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '64px 24px 48px' }}>
+          <p className="font-serif-display" style={{ color: 'var(--ink-soft)', fontSize: 15, maxWidth: '68ch', margin: '0 0 16px' }}>
+            A short check with a clear output.
+          </p>
+          <h1 className="font-serif-display" style={{ color: 'var(--ink)', fontSize: 'clamp(28px,4vw,38px)', lineHeight: 1.15, maxWidth: '24ch', margin: 0 }}>
+            Same structure every time, built for quick decisions.
+          </h1>
+          <p className="font-serif-display" style={{ color: 'var(--ink)', fontSize: 18, lineHeight: 1.6, maxWidth: '68ch', marginTop: 18 }}>
+            Paste what you received. Get the same shape back every time {`\u2014`} verdict, confidence,
+            explanation and signals. No chat, no extra steps.
+          </p>
         </div>
       </section>
 
-      <section className="bg-slate-50 border-b border-slate-200">
-        <div className="max-w-[1120px] mx-auto px-6 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { n:'01', t:'Choose a type', d:'Message, link, article or document. Each has a tailored check.' },
-              { n:'02', t:'Add context', d:'Include the full text, sender or headline for a better read.' },
-              { n:'03', t:'Get the result', d:'Same format every time, built for quick decisions.' },
-            ].map(s=>(
-              <div key={s.n} className="bg-white border border-slate-200 rounded-xl p-4 flex gap-3 items-start">
-                <span className="font-mono text-[11px] font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-1.5 py-1 leading-none">{s.n}</span>
-                <div>
-                  <div className="text-sm font-bold text-slate-900 mb-1">{s.t}</div>
-                  <div className="text-sm text-slate-600 leading-relaxed">{s.d}</div>
-                </div>
+      {/* What gets checked */}
+      <section className="paper-grain" style={{ borderBottom: '1px solid var(--line)' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '56px 24px' }}>
+          <h2 className="font-instrument font-semibold mb-8" style={{ fontSize: 22, color: 'var(--ink)' }}>
+            What gets checked
+          </h2>
+          <div className="grid gap-x-10 gap-y-10 md:grid-cols-2" style={{ maxWidth: 900 }}>
+            {types.map(t => (
+              <div key={t.t}>
+                <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>
+                  {t.t}
+                </h3>
+                <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                  {t.d}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-white border-b border-slate-200">
-        <div className="max-w-[1120px] mx-auto px-6 py-12 pb-8">
-          <h2 className="text-lg font-bold tracking-tight text-slate-900 m-0 mb-4">What gets checked</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { icon:<Mail size={16}/>, title:'Message', desc:'Urgent language, credential requests and sender mismatches.' },
-              { icon:<Link2 size={16}/>, title:'Link', desc:'URL shape, redirects and signals before you click.' },
-              { icon:<Newspaper size={16}/>, title:'Article', desc:'Claim framing, sourcing and language that pressures a quick share.' },
-            ].map(c=>(
-              <div key={c.title} className="bg-slate-50 border border-slate-200 rounded-xl p-4.5 h-full">
-                <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 inline-flex items-center justify-center text-slate-900 mb-2.5">{c.icon}</div>
-                <div className="text-sm font-bold text-slate-900 mb-1.5">{c.title}</div>
-                <div className="text-sm text-slate-600 leading-relaxed">{c.desc}</div>
-              </div>
-            ))}
+      {/* The output */}
+      <section className="paper-grain" style={{ borderBottom: '1px solid var(--line)' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '56px 24px' }}>
+          <h2 className="font-instrument font-semibold mb-8" style={{ fontSize: 22, color: 'var(--ink)' }}>
+            The output
+          </h2>
+          <div className="grid gap-x-10 gap-y-10 md:grid-cols-2" style={{ maxWidth: 900 }}>
+            <div>
+              <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>
+                Verdict
+              </h3>
+              <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                Safe, Suspicious or Scam, always with a confidence range instead of a single number.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>
+                Explanation
+              </h3>
+              <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                One short paragraph in plain language, written so you can forward it to whoever sent it.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>
+                Signals
+              </h3>
+              <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                The checkable cues behind the verdict, each one you can verify yourself.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-instrument font-semibold mb-2" style={{ fontSize: 16, color: 'var(--ink)' }}>
+                Consistency
+              </h3>
+              <p className="font-serif-display m-0" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', maxWidth: '68ch' }}>
+                Structured JSON and narrow prompts keep results fast, consistent and easy to scan.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-slate-50">
-        <div className="max-w-[1120px] mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="bg-white border border-slate-200 rounded-xl p-5 h-full">
-              <div className="flex gap-2.5 items-center mb-2.5">
-                <span className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 inline-flex items-center justify-center text-slate-900"><ShieldCheck size={16}/></span>
-                <div className="text-sm font-bold text-slate-900">Private by default</div>
-              </div>
-              <ul className="m-0 pl-4.5 text-sm text-slate-600 leading-[1.7]">
-                <li>No account, no storage — content is discarded.</li>
-                <li>Rate limits and basic validation on the server.</li>
-                <li>History, if shown, lives only in your browser.</li>
-              </ul>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-xl p-5 h-full">
-              <div className="flex gap-2.5 items-center mb-2.5">
-                <span className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 inline-flex items-center justify-center text-slate-900"><Search size={16}/></span>
-                <div className="text-sm font-bold text-slate-900">Consistent output</div>
-              </div>
-              <ul className="m-0 pl-4.5 text-sm text-slate-600 leading-[1.7]">
-                <li>Verdict with calibrated confidence.</li>
-                <li>Plain-language explanation.</li>
-                <li>Signals you can check yourself.</li>
-              </ul>
-            </div>
-          </div>
-          <div className="text-center mt-7">
-            <Button to="/analyzer" variant="primary">Try it now</Button>
+      {/* Commitments */}
+      <section className="paper-grain" style={{ borderBottom: '1px solid var(--line)' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 1120, padding: '56px 24px' }}>
+          <h2 className="font-instrument font-semibold mb-8" style={{ fontSize: 22, color: 'var(--ink)' }}>
+            Privacy by default
+          </h2>
+          <ul className="m-0 list-none p-0 grid gap-4" style={{ maxWidth: 900 }}>
+            {commitments.map(c => (
+              <li key={c} className="flex gap-3 items-start">
+                <ShieldCheck size={16} className="mt-1 shrink-0" style={{ color: 'var(--lamp)' }} />
+                <span className="font-serif-display" style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)' }}>
+                  {c}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <div style={{ marginTop: 40 }}>
+            <Link
+              to="/analyzer"
+              className="inline-block text-sm font-sans font-semibold no-underline"
+              style={{ color: 'var(--ink)' }}
+            >
+              <span style={{ borderBottom: '1px solid var(--lamp)' }}>Try it now</span>
+            </Link>
           </div>
         </div>
       </section>
