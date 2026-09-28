@@ -1,4 +1,4 @@
-# Tech Stack — TruthCheck AI
+# Tech Stack — Veridex
 
 ## Frontend
 

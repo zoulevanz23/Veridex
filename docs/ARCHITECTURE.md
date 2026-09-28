@@ -1,7 +1,7 @@
-# TruthCheck AI — Architecture
+# Veridex — Architecture
 
 ## 1. Overview
-TruthCheck AI is a privacy-first verification tool. User pastes a message/link/article/document → backend runs heuristic URL checks + LLM structured analysis → returns `verdict + confidence + explanation + signals`.
+Veridex is a privacy-first verification tool. User pastes a message/link/article/document/image → backend runs heuristic URL checks + LLM structured analysis → returns `verdict + confidence + explanation + signals`.
 
 **Principles:**
 - No storage (stateless, PII discarded after response)

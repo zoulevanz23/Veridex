@@ -1,4 +1,4 @@
-# 🛡️ TruthCheck AI
+# 🛡️ Veridex
 
 ![React](https://img.shields.io/badge/React-18%20%7C%20TypeScript-0F172A)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF)
@@ -6,9 +6,9 @@
 ![Gemini](https://img.shields.io/badge/Gemini-flash--latest-2563EB)
 ![Privacy](https://img.shields.io/badge/Privacy-No%20Storage-059669)
 
-> **Clear verification for everyday decisions.** Paste a message, link, article or document — get a structured verdict with confidence, explanation and signals. No account. No data stored.
+> **Clear verification for everyday decisions.** Paste a message, link, article or document — get a structured verdict with confidence, explanation and signals. Optional account for unlimited checks. No data stored.
 
-Live 90vh hero owns the viewport; second section requires scroll. Editorial light SaaS: `Inter` + `JetBrains Mono`, restrained `F8FAFC`/`FFFFFF`/`E2E8F0` palette. All CTAs are `Button` `src/components/ui/Button.tsx:1` (`primary #1D4ED8/white pill`, `secondary white/#0F172A`).
+Live examination-desk hero owns the viewport. Editorial light with `--paper`/`--ink`/`--lamp` tokens, `Inter` + `Newsreader` (serif body) + `Archivo` (instrument readouts), restrained flat surfaces. All CTAs are quiet underline links tinted with the lamp accent.
 
 ---
 
@@ -17,17 +17,34 @@ Live 90vh hero owns the viewport; second section requires scroll. Editorial ligh
 ### Core Verification
 | Feature | What it does |
 |---|---|
-| **Multi-type analysis** `src/lib/api.ts:17` `src/components/InputForm.tsx:9` | `message` (phishing/urgency/credential requests) · `link` (HTTPS, IP host, homograph, subdomains, TLD, shortener, port, phishy keywords) `server/index.js:29` · `news` (claim framing, source credibility) · `document` |
+| **Multi-type analysis** `src/lib/api.ts:17` `src/components/InputForm.tsx:9` | `message` (phishing/urgency/credential requests) · `link` (HTTPS, IP host, homograph, subdomains, TLD, shortener, port, phishy keywords) `server/index.js:29` · `news` (claim framing, source credibility) · `document` · `image` (AI-generated detection via Gemini) |
 | **Structured result** `src/components/ResultCard.tsx:1` | `verdict` `SAFE/SUSPICIOUS/SCAM/TRUSTWORTHY/QUESTIONABLE/LIKELY_FAKE` + `confidence 0-100` + `explanation` + `signals[0..12]` + `rawText` |
 | **Confidence calibration** `src/components/ResultCard.tsx:53` | `Very High (≥80) / High (≥60) / Moderate (≥40) / Low (≥20) / Very Low` — mono `87/100` large type, bar `width:pct%` |
 | **Verdict feedback** `src/components/ResultCard.tsx:33` | Copy (`Copy` `lucide`) + Share (`Share2`, Web Share API fallback to clipboard) |
+| **Image analysis** `src/lib/api.ts:22` | Routes to Gemini multimodal for AI-generated content detection with contextual fallback messages |
+
+### Authentication & Credits
+| Feature | Detail |
+|---|---|
+| **Guest mode** `src/context/AuthContext.tsx:1` | 10 free credits without account. Local storage tracking. |
+| **Account mode** `src/context/AuthContext.tsx:1` | Unlimited checks after registration. JWT authentication with refresh tokens. |
+| **Credit tracking** `src/components/Header.tsx:1` | Visual credit badge in header with progress bar. Toast notifications on credit usage. |
+| **Google OAuth** `src/components/ui/GoogleSignInButton.tsx:1` | Optional Google sign-in integration. |
 
 ### Document & History
 | Feature | Detail |
 |---|---|
 | **Document upload** `src/components/InputForm.tsx:32` `34` | `.txt` via `File.text()` inline, `.pdf/.docx` prompt to copy text (placeholder for `pdf-parse`/`mammoth`). Shown as `Attach file` pill, `0 / 10,000` counter `var(--font-mono)`. |
-| **Result history** `src/pages/AnalyzerPage.tsx:7` `src/components/InputForm.tsx:24` (planned) | Persist last 20 results in `localStorage truthcheck-ai-history` — private, no server storage. Click to restore. |
+| **Result history** `src/pages/AnalyzerPage.tsx:7` `src/components/InputForm.tsx:24` (planned) | Persist last 20 results in `localStorage veridex-history` — private, no server storage. Click to restore. |
 | **Video hero** `src/pages/HomePage.tsx:32` `public/Vid/truth.mp4` | `Vid/truth.mp4` → `public/Vid/truth.mp4` `video` `autoPlay loop muted playsInline controls={false} disablePictureInPicture` `720×460` `16:9` wide, not tall. Editorial slip replaced — top `3px #0F172A` rule, `Ref 4F29 • EXAMPLE`. |
+
+### Browser Extension
+| Feature | Detail |
+|---|---|
+| **Chrome extension** `browser-extension/` | TypeScript-based extension for in-browser verification. |
+| **Content script** `browser-extension/src/content/ui-injector.ts` | Injects verification UI into web pages. |
+| **Background worker** `browser-extension/src/background/service-worker.ts` | Handles API calls and storage. |
+| **Options page** `browser-extension/src/options/options.ts` | Extension settings and configuration. |
 
 ### Intelligence & Safety
 | Feature | Detail |
@@ -60,9 +77,11 @@ Live 90vh hero owns the viewport; second section requires scroll. Editorial ligh
 * **Custom UI** `src/components/ui/Button.tsx:1` — `motion.span y:-1/scale:0.98`, `variant primary #1D4ED8/white pill 9999` `secondary white/#0F172A`, avoids `btn-primary` `!important` white-on-white bug `src/App.css:1135`
 
 ### Backend
-* **Node 18+ Express 4** `server/index.js:5` — `express.json 10mb`
-* **Google Generative Language** `server/index.js:361` — `POST https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent` `temperature 0.7 topK 40 topP 0.95 maxTokens 1024` + 4 safety `BLOCK_MEDIUM_AND_ABOVE`
-* **Security** `helmet` CSP, `cors` multi-origin `ALLOWED_ORIGINS`/`FRONTEND_URL` `server/index.js:160`, dual `rateLimit` `server/index.js:175` `100/15m` + `10/1m analyze`
+* **Node 18+ Express 4 + TypeScript** `server/src/server.ts:1` — `express.json 10mb`
+* **Google Generative Language** `server/src/services/gemini.service.ts:1` — `POST https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent` `temperature 0.7 topK 40 topP 0.95 maxTokens 1024` + 4 safety `BLOCK_MEDIUM_AND_ABOVE`
+* **Groq Integration** `server/src/services/groq.service.ts:1` — Alternative AI provider for text analysis
+* **Security** `helmet` CSP, `cors` multi-origin `ALLOWED_ORIGINS`/`FRONTEND_URL` `server/src/server.ts:1`, dual `rateLimit` `100/15m` + `10/1m analyze`
+* **Authentication** `server/src/auth/` — JWT with refresh tokens, role-based authorization
 
 ### Design System
 * `src/styles/tokens.css` `globals.css` `layout.css` `src/styles/*` — decomposed from `src/App.css:2320` monolith (now editorial overrides + `272kB` built)
@@ -71,6 +90,11 @@ Live 90vh hero owns the viewport; second section requires scroll. Editorial ligh
 ---
 
 ## 🚀 Quick Start
+
+### One-Click Start (Windows)
+```bash
+run.bat  # Starts both backend and frontend servers
+```
 
 ### Backend
 ```bash
@@ -139,30 +163,62 @@ Light editorial SaaS, not cyberpunk: strong `Inter` typography hierarchy first, 
 src/
 ├── components/
 │   ├── ui/Button.tsx          # primary/secondary pill, motion y:-1/scale 0.98
-│   ├── Header.tsx             # 14px compact, BETA pill, Operational dot, Button primary
+│   ├── ui/AuthModal.tsx       # authentication modal with credit status
+│   ├── ui/GoogleSignInButton.tsx  # Google OAuth integration
+│   ├── ui/ConfirmDialog.tsx   # confirmation dialog component
+│   ├── Header.tsx             # 14px compact, credit badge, Operational dot
 │   ├── Footer.tsx             # F8FAFC/Border, ShieldCheck 18
 │   ├── InputForm.tsx          # workspace 720, type tabs, Content 0/10k, attach, Analyze
 │   ├── ResultCard.tsx         # verdict stripe 4px #DC2626, 28px LIKELY SCAM / 87
-│   └── Loader.tsx             # inline 16px spin 0.7s
+│   ├── Loader.tsx             # inline 16px spin 0.7s
+│   └── landing/               # landing page components (Hero, Evidence, Verdict, etc.)
 ├── pages/
-│   ├── HomePage.tsx           # 90vh hero 60px headline, video public/Vid/truth.mp4 720×460, 4 features 24px
+│   ├── HomePage.tsx           # 90vh hero 60px headline, video public/Vid/truth.mp4 720×460
 │   ├── AnalyzerPage.tsx       # workspace + private/budget cards
 │   ├── FeaturesPage.tsx       # How it works 01/02/03 + What gets checked
-│   └── AboutPage.tsx          # editorial header, snapshot, approach, principles, builder
+│   ├── AboutPage.tsx          # editorial header, snapshot, approach, principles, builder
+│   ├── ExtensionPage.tsx      # browser extension page
+│   ├── RegisterPage.tsx      # user registration
+│   ├── SigninPage.tsx         # user sign in
+│   └── ProfilePage.tsx        # user profile
+├── context/
+│   └── AuthContext.tsx        # authentication and credit management
 ├── lib/
-│   ├── api.ts                 # generatePrompt per type, analyzeContent, checkServerHealth double-try
-│   └── motion.ts              # easeStandard, fadeUp, staggerContainer
+│   ├── api.ts                 # generatePrompt per type, analyzeContent, checkServerHealth
+│   ├── motion.ts              # easeStandard, fadeUp, staggerContainer
+│   ├── googleAuth.ts          # Google OAuth utilities
+│   ├── password.ts            # password validation
+│   └── userStore.ts           # user state management
 ├── styles/
 │   ├── tokens.css             # F8FAFC/F... palette, 4px space, Inter/JetBrains
 │   ├── globals.css            # antialiased, focus-visible
 │   └── layout.css             # container-narrow 720 / wide 1120
-├── config/api.ts              # API_BASE_URL dev → localhost:5000
-├── App.tsx                    # BrowserRouter / /analyzer /features /about
-└── main.tsx                   # tokens+globals+layout imports
+├── App.tsx                    # BrowserRouter with authentication
+└── main.tsx                   # tokens+globals+layout imports, Toaster config
 server/
-├── index.js                   # express + heuristics + Gemini multi-model + advisories
+├── src/
+│   ├── app.ts                 # Express app configuration
+│   ├── server.ts              # Server entry point
+│   ├── auth/                  # Authentication routes and middleware
+│   ├── bulk/                  # Bulk analysis endpoint
+│   ├── config/                # Environment configuration
+│   ├── db.ts                  # Database configuration
+│   ├── middleware/            # Auth and validation middleware
+│   ├── routes/                # API routes (health, analyze)
+│   ├── services/              # Gemini and Groq AI services
+│   └── utils/                 # Logger utility
+├── index.js                   # Legacy server entry (being migrated)
 └── package.json
-Vid/truth.mp4  →  public/Vid/truth.mp4  # hero video 280→460 wide, no controls
+browser-extension/
+├── src/
+│   ├── background/            # Service worker
+│   ├── content/               # UI injector
+│   ├── options/               # Options page
+│   └── shared/                # Shared utilities
+├── manifest.json              # Extension manifest
+└── tsconfig.json              # TypeScript config
+run.bat                        # Windows startup script
+commits.md                     # Commit strategy documentation
 ```
 
 ---

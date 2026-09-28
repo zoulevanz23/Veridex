@@ -20,7 +20,7 @@ Required:
 
 Optional:
 - `ENABLE_REPUTATION_CHECKS`: `1` to enable the phishing database check.
-- `FRONTEND_URL`: Your Vercel site, e.g. `https://truthcheck-ai.vercel.app`
+- `FRONTEND_URL`: Your Vercel site, e.g. `https://veridex.vercel.app`
 
 ---
 
