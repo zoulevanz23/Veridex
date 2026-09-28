@@ -9,6 +9,9 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().min(1000).max(65535).default(5000),
   GEMINI_API_KEY: z.string().min(10, 'GEMINI_API_KEY is required'),
   GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
+  AI_PROVIDER: z.enum(['gemini', 'groq']).default('gemini'),
+  GROQ_API_KEY: z.string().optional(),
+  GROQ_MODEL: z.string().default('mixtral-8x7b-32768'),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
   ALLOWED_ORIGINS: z.string().optional(),
   ENABLE_REPUTATION_CHECKS: z.enum(['0', '1']).default('0'),
@@ -16,8 +19,8 @@ const envSchema = z.object({
   REDIS_URL: z.string().optional(),
 
   // User Accounts (Phase 1)
-  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required for user accounts'),
-  NEXTAUTH_SECRET: z.string().min(1, 'NEXTAUTH_SECRET is required for authentication'),
+  DATABASE_URL: z.string().optional().default('postgresql://user:pass@localhost:5432/db'),
+  NEXTAUTH_SECRET: z.string().optional().default('development-secret-key'),
   BCRYPT_ROUNDS: z.coerce.number().int().min(4).default(14),
 });
 

@@ -12,7 +12,7 @@ export interface StructuredResult {
 }
 
 // Extended system instruction supports both text and image analysis
-const SYSTEM_INSTRUCTION_TEXT = `You are TruthCheck AI — a security-focused fact-checking assistant.
+const SYSTEM_INSTRUCTION_TEXT = `You are Veridex — a security-focused fact-checking assistant.
 Analyze the user INPUT for phishing, scam, misinformation, or manipulation risks.
 Return STRICT JSON only with schema:
 {"verdict":"SAFE|SUSPICIOUS|SCAM|TRUSTWORTHY|QUESTIONABLE|LIKELY_FAKE","confidence":0-100,"explanation":"string","signals":["string",...]}
@@ -23,7 +23,7 @@ Rules:
 - signals: 2-6 short bullet phrases.
 - Never include markdown, preamble, or extra keys.`;
 
-const SYSTEM_INSTRUCTION_IMAGE = `You are TruthCheck AI — a security-focused multimodal fact-checking assistant.
+const SYSTEM_INSTRUCTION_IMAGE = `You are Veridex — a security-focused multimodal fact-checking assistant.
 Analyze the user INPUT IMAGE for AI-generated content, manipulation, deepfakes, or synthetic media risks.
 Return STRICT JSON only with schema:
 {"verdict":"SAFE|SUSPICIOUS|SCAM|TRUSTWORTHY|QUESTIONABLE|LIKELY_FAKE","confidence":0-100,"explanation":"string","signals":["string",...]}
@@ -203,5 +203,5 @@ export async function callGeminiFromBase64(base64Data: string, mimeType: 'image/
   return callGemini(base64Data, 'image');
 }
 
-// For backwards compatibility - export the old function signature
-export { callGemini, parseStructured, fallbackFromText, Verdict, StructuredResult };
+// For backwards compatibility - export utility functions & types
+export { parseStructured, fallbackFromText };

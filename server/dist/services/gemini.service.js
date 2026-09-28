@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.callGemini = callGemini;
 const env_1 = require("../config/env");
 const logger_1 = require("../utils/logger");
-const SYSTEM_INSTRUCTION = `You are TruthCheck AI — a security-focused fact-checking assistant.
+const SYSTEM_INSTRUCTION = `You are Veridex — a security-focused fact-checking assistant.
 Analyze the user INPUT for phishing, scam, misinformation, or manipulation risks.
 Return STRICT JSON only with schema:
 {"verdict":"SAFE|SUSPICIOUS|SCAM|TRUSTWORTHY|QUESTIONABLE|LIKELY_FAKE","confidence":0-100,"explanation":"string","signals":["string",...]}

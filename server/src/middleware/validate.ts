@@ -40,7 +40,7 @@ export function validateAnalyze(req: Request, res: Response, next: NextFunction)
   }
   const parsed = analyzeSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.errors[0].message, details: parsed.error.errors });
+    return res.status(400).json({ error: parsed.error.issues[0].message, details: parsed.error.issues });
   }
   req.body = parsed.data as any;
   next();

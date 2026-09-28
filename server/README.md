@@ -1,6 +1,6 @@
-# TruthCheck AI Server
+# Veridex Server
 
-Backend server for TruthCheck AI - AI-powered detection of scams, phishing, and fake news.
+Backend server for Veridex - AI-powered detection of scams, phishing, and fake news.
 
 ## Setup Instructions
 

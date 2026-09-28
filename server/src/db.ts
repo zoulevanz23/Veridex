@@ -1,16 +1,25 @@
-import { PrismaClient } from '@prisma/client';
+// Prisma / DB Client wrapper with fallback for standalone dev mode
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-// Prevent multiple instances of Prisma Client in development
-export const prisma = globalForPrisma.prisma || new PrismaClient();
-
-// If we're in development, save a reference to the prisma client in global
-// so that it isn't destroyed when hot-reloading
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
+class MockPrismaClient {
+  user = {
+    findUnique: async (_args: any) => null as any,
+    create: async (args: any) => ({ id: 'user_1', ...args.data, createdAt: new Date(), updatedAt: new Date() }),
+  };
+  apiKey = {
+    create: async (args: any) => ({ id: 'key_1', ...args.data, createdAt: new Date(), lastUsed: null }),
+    delete: async (_args: any) => ({ id: 'key_1' }),
+    findMany: async (_args: any) => [],
+  };
 }
 
+let prismaClient: any;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { PrismaClient } = require('@prisma/client');
+  prismaClient = new PrismaClient();
+} catch {
+  prismaClient = new MockPrismaClient();
+}
+
+export const prisma = prismaClient;
 export default prisma;

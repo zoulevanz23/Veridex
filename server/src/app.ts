@@ -24,7 +24,7 @@ app.use(helmet({
       connectSrc: ["'self'", 'https://generativelanguage.googleapis.com', 'https://phish.sinking.yachts'],
     },
   },
-});
+}));
 app.disable('x-powered-by');
 
 // CORS — strict

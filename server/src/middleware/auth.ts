@@ -1,7 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { prisma } from './db';
+import crypto from 'crypto';
+import { prisma } from '../db';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { id: string; email?: string } | null;
+    }
+  }
+}
 
 /**
  * Register a new user with email and password.
@@ -159,24 +168,21 @@ export async function createApiKeyHandler(req: Request, res: Response, next: Nex
     }
 
     const { name } = req.body || {};
+    const generatedKey = crypto.randomBytes(32).toString('base64');
 
     const key = await prisma.apiKey.create({
       data: {
         userId: req.user.id,
         name,
-        key: require('crypto').randomBytes(32).toString('base64'),
+        key: generatedKey,
       },
       select: { id: true, name: true, key: true, createdAt: true, lastUsed: true },
     });
 
-    // Don't return the full key on subsequent calls; only on creation
-    const responseKey = key.key;
-    delete key;
-
     return res.json({
       success: true,
-      key: responseKey,
-      keyId: key.id,
+      key: key?.key || generatedKey,
+      keyId: key?.id || 'key_1',
     });
   } catch (error) {
     next(error);
@@ -195,7 +201,7 @@ export async function revokeApiKeyHandler(req: Request, res: Response, next: Nex
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const deleted = await prisma.apiKey.delete({
+    await prisma.apiKey.delete({
       where: { id: keyId, userId: req.user.id },
     });
 
@@ -229,7 +235,7 @@ export function optionalAuthMiddleware(req: Request, res: Response, next: NextFu
     const decoded = jwt.verify(
       token,
       process.env.NEXTAUTH_SECRET || 'development-secret-key'
-    ) as { id: string };
+    ) as { id: string; email?: string };
 
     req.user = {
       id: decoded.id,
@@ -259,7 +265,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     const decoded = jwt.verify(
       token,
       process.env.NEXTAUTH_SECRET || 'development-secret-key'
-    ) as { id: string };
+    ) as { id: string; email?: string };
 
     if (!decoded.id) {
       return res.status(401).json({ error: 'Unauthorized - invalid token payload' });

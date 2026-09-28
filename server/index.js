@@ -274,7 +274,7 @@ app.post('/analyze', analysisLimiter, async (req, res) => {
       const label = type === 'image' ? 'Image' : type === 'link' ? 'URL/Link' : type === 'news' ? 'News/Article' : type === 'document' ? 'Document' : 'Message/Email'
       // For image, content is base64 or data URL - handle safely (truncate for log)
       const inputForPrompt = type === 'image' ? `[Image data: ${String(content).slice(0,80)}... base64]` : String(content)
-      const base = `You are TruthCheck AI — security-focused assistant. Analyze INPUT for phishing/scam/misinformation/AI-generated risks. Return STRICT JSON {"verdict":"SAFE|SUSPICIOUS|SCAM|TRUSTWORTHY|QUESTIONABLE|LIKELY_FAKE","confidence":0-100,"explanation":"string","signals":["string",...]}\n`
+      const base = `You are Veridex — security-focused assistant. Analyze INPUT for phishing/scam/misinformation/AI-generated risks. Return STRICT JSON {"verdict":"SAFE|SUSPICIOUS|SCAM|TRUSTWORTHY|QUESTIONABLE|LIKELY_FAKE","confidence":0-100,"explanation":"string","signals":["string",...]}\n`
       prompt = `${base}Context: ${label}\nINPUT:\n${inputForPrompt}`
       // If image, we will handle inlineData below instead of text prompt
     }

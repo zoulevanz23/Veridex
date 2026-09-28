@@ -1,9 +1,8 @@
-import NextAuth from 'next-auth';
-import { authOptions } from './options';
+import { authOptions, NextAuthOptions } from './options';
 
-const handler = NextAuth(authOptions);
+export function handler(_req: any, res: any) {
+  return res.json({ message: 'Auth handler endpoint', options: authOptions });
+}
 
 export { handler as GET, handler as POST };
-
-// Export types for use in routes
-export type { NextAuthOptions } from './options';
+export type { NextAuthOptions };

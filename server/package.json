@@ -1,28 +1,40 @@
 {
-  "name": "truthcheck-ai-server",
+  "name": "veridex-server",
   "version": "1.0.0",
-  "description": "Backend server for TruthCheck AI",
+  "description": "Backend server for Veridex",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "echo build step not required"
-    ,"test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo build step not required",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["ai", "scam-detection", "phishing", "fake-news"],
+  "keywords": [
+    "ai",
+    "scam-detection",
+    "phishing",
+    "fake-news"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5"
+    "pino": "^10.3.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.2",
     "nodemon": "^3.0.2"
   },
   "engines": {
     "node": ">=18.0.0"
   }
-} 
+}
