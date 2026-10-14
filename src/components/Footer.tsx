@@ -1,13 +1,11 @@
 import { Link } from 'react-router-dom'
-import { ShieldCheck, Github, Linkedin, User } from 'lucide-react'
+import { Github, Linkedin, User } from 'lucide-react'
 export default function Footer(){
   return (
     <footer style={{ background: 'var(--surface)', borderTop: '1px solid var(--line)' }}>
       <div className="max-w-[1120px] mx-auto px-6 py-5 flex justify-between gap-4 flex-wrap items-center">
         <div className="flex gap-2.5 items-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded-sm" style={{ background: 'var(--ink)' }}>
-            <ShieldCheck size={12} color="var(--paper)" />
-          </span>
+          <img src="/veridex-logo.png" alt="Veridex logo" className="w-5 h-5 object-contain rounded-sm" />
           <span className="font-instrument font-semibold" style={{ color: 'var(--ink)' }}>Veridex</span>
           <span>© {new Date().getFullYear()} • Privacy-first verification</span>
         </div>

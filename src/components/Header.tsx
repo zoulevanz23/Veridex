@@ -44,6 +44,7 @@ export default function Header() {
           style={{ color: 'var(--ink)' }}
           onClick={() => setOpen(false)}
         >
+          <img src="/veridex-logo.png" alt="Veridex logo" className="w-7 h-7 object-contain" />
           Veridex
         </Link>
 

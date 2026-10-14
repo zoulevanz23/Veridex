@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
 import GoogleSignInButton from '../components/ui/GoogleSignInButton'
 
 const SigninPage = () => {
@@ -61,7 +60,7 @@ const SigninPage = () => {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--paper)' }}>
       <div className="max-w-md w-full rounded-sm p-8" style={{ background: 'var(--surface)', border: '1px solid var(--line)' }}>
         <div className="flex items-center gap-2 mb-1">
-          <ShieldCheck size={20} style={{ color: 'var(--lamp)' }} />
+          <img src="/veridex-logo.png" alt="Veridex logo" className="w-6 h-6 object-contain" />
           <span className="text-xs font-instrument font-semibold" style={{ color: 'var(--ink-soft)' }}>Veridex</span>
         </div>
         <h2 className="text-2xl font-instrument font-bold tracking-tight m-0 mb-6" style={{ color: 'var(--ink)' }}>Sign in</h2>
