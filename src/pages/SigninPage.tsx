@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import GoogleSignInButton from '../components/ui/GoogleSignInButton'
+import { toUserMessage, FRIENDLY_ERRORS } from '../lib/friendlyErrors'
 
 const SigninPage = () => {
   const [email, setEmail] = useState('')
@@ -40,7 +41,7 @@ const SigninPage = () => {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'We couldn\'t sign you in. Check your details and try again.')
+        throw new Error(toUserMessage(data.error, FRIENDLY_ERRORS.signin))
       }
 
       if (data.token) {
@@ -50,7 +51,7 @@ const SigninPage = () => {
 
       navigate('/')
     } catch (err: any) {
-      setError(err.message || 'We couldn\'t sign you in. Check your details and try again.')
+      setError(toUserMessage(err, FRIENDLY_ERRORS.signin))
     } finally {
       setLoading(false)
     }

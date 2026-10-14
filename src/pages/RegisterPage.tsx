@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import GoogleSignInButton from '../components/ui/GoogleSignInButton'
+import { toUserMessage, FRIENDLY_ERRORS } from '../lib/friendlyErrors'
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('')
@@ -48,7 +49,7 @@ const RegisterPage = () => {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'We couldn\'t create your account. Try again in a moment.')
+        throw new Error(toUserMessage(data.error, FRIENDLY_ERRORS.register))
       }
 
       if (data.token) {
@@ -58,7 +59,7 @@ const RegisterPage = () => {
 
       navigate('/')
     } catch (err: any) {
-      setError(err.message || 'We couldn\'t create your account. Try again in a moment.')
+      setError(toUserMessage(err, FRIENDLY_ERRORS.register))
     } finally {
       setLoading(false)
     }

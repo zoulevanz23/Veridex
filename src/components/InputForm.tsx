@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Mail, Link2, Newspaper, FileText, Image as ImageIcon, ArrowRight, ShieldCheck, AlertTriangle, XCircle, Upload, Sparkles } from 'lucide-react'
 import { analyzeContent, type AnalysisResponse } from '../lib/api'
+import { toUserMessage, FRIENDLY_ERRORS } from '../lib/friendlyErrors'
 import ResultCard from './ResultCard'
 import Loader from './Loader'
 import { toast } from 'react-hot-toast'
@@ -99,7 +100,7 @@ const InputForm = () => {
       const out = await analyzeContent(content, type)
       setResult(out)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Analysis failed.'
+      const msg = toUserMessage(err, FRIENDLY_ERRORS.analysis)
       setError(msg); try { toast.error(msg) } catch {}
     } finally { setIsLoading(false) }
   }

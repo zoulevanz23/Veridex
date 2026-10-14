@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../../context/AuthContext'
+import { toUserMessage, FRIENDLY_ERRORS } from '../../lib/friendlyErrors'
 
 interface Props {
   text?: string
@@ -25,7 +26,7 @@ export default function GoogleSignInButton({ text = 'Continue with Google', onSu
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         })
 
-        if (!res.ok) throw new Error('Failed to fetch Google profile')
+        if (!res.ok) throw new Error(FRIENDLY_ERRORS.google)
 
         const profile = await res.json()
 
@@ -38,15 +39,14 @@ export default function GoogleSignInButton({ text = 'Continue with Google', onSu
 
         onSuccess?.()
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Google sign-in failed'
-        setError(message)
+        setError(toUserMessage(err, FRIENDLY_ERRORS.google))
       } finally {
         setLoading(false)
       }
     },
     onError: (err) => {
       console.error('Google login error:', err)
-      setError('Google sign-in was cancelled or failed.')
+      setError('Google sign-in was closed before finishing. You can try again anytime.')
       setLoading(false)
     },
   })

@@ -141,12 +141,16 @@ function runAnalysis(content, type = 'message', triggerBtn) {
     if (data && data.result) {
       displayResult(data.result, content);
     } else {
-      alert((data && data.error) || 'Analysis request failed.');
+      const raw = (data && data.error) || '';
+      const friendly = /server|backend|\bapi\b|fetch|network|http\s?\d{3}|port\s?\d+|npm run|localhost|endpoint|request failed|abort|timeout|failed/i.test(String(raw))
+        ? 'We couldn’t complete this check. Please try again in a moment.'
+        : (String(raw).trim() || 'We couldn’t complete this check. Please try again in a moment.');
+      alert(friendly);
     }
   })
   .catch(err => {
     console.error(err);
-    alert('Could not connect to Veridex backend. Please start backend on port 5000 (npm run dev).');
+    alert('We couldn’t complete this check right now. Please try again in a moment.');
   })
   .finally(() => {
     triggerBtn.disabled = false;

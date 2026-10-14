@@ -18,7 +18,7 @@ class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode },
   }
   static getDerivedStateFromError() { return { hasError: true } }
   componentDidCatch(error: unknown) { console.error('Global error boundary caught:', error) }
-  render() { return this.state.hasError ? <div className="p-6">Something went wrong. Please refresh.</div> : this.props.children }
+  render() { return this.state.hasError ? <div className="p-6">Something didn’t load as expected. Please refresh to try again.</div> : this.props.children }
 }
 
 function App() {

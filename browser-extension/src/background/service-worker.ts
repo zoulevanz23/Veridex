@@ -131,14 +131,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
   const ok = await ensureContentScript(tab.id);
   if (!ok) {
-    notify('Veridex', 'Cannot analyze this page (restricted page or no content script). Reload the tab.');
+    notify('Veridex', 'We couldn’t check this page. Please reload the tab and try again.');
     return;
   }
   try {
     await chrome.tabs.sendMessage(tab.id, { type: 'verify-link', text, contentType, url: text });
   } catch (err) {
     console.error('[Veridex] Failed to send verify-link:', err);
-    notify('Veridex', 'Could not reach page content. Please reload the tab.');
+    notify('Veridex', 'We couldn’t reach the page content. Please reload the tab and try again.');
   }
 });
 
@@ -190,7 +190,16 @@ async function postAnalyze(text: string, contentType: string) {
       continue;
     }
   }
-  throw lastError || new Error('Analysis request failed');
+  throw lastError || new Error('We couldn’t complete this check. Please try again in a moment.');
+}
+
+function toUserMessage(raw: unknown): string {
+  const msg = String((raw as { message?: unknown })?.message ?? raw ?? '').trim();
+  if (!msg) return 'We couldn’t complete this check. Please try again in a moment.';
+  if (/server|backend|\bapi\b|fetch|network|http\s?\d{3}|port\s?\d+|npm run|localhost|endpoint|request failed|abort|timeout/i.test(msg)) {
+    return 'We couldn’t complete this check. Please try again in a moment.';
+  }
+  return msg;
 }
 
 function guessContentType(text: string): 'message' | 'link' | 'image' {
@@ -232,7 +241,7 @@ chrome.runtime.onMessage.addListener((message: any, sender, sendResponse) => {
           }
           sendResponse({ ok: true, result: data.result });
         } else {
-          const errMsg = (data && data.error) || 'Analysis failed';
+          const errMsg = toUserMessage((data && (data as { error?: unknown }).error) || '');
           notify('Veridex', errMsg);
           if (tabId != null) {
             chrome.tabs.sendMessage(tabId, {
@@ -247,7 +256,7 @@ chrome.runtime.onMessage.addListener((message: any, sender, sendResponse) => {
       })
       .catch(err => {
         console.error('[Veridex] Analysis error:', err);
-        const errMsg = 'Cannot reach Veridex server on port 5000. Please start the backend.';
+        const errMsg = 'We couldn’t complete this check right now. Please try again in a moment.';
         notify('Veridex', errMsg);
         if (tabId != null) {
           chrome.tabs.sendMessage(tabId, {

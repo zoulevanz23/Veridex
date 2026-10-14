@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { validatePassword } from '../lib/password'
 import PasswordStrengthMeter from '../components/ui/PasswordStrengthMeter'
 import { updateUserPassword } from '../lib/userStore'
+import { toUserMessage, FRIENDLY_ERRORS } from '../lib/friendlyErrors'
 
 export default function ForgotPasswordPage() {
   const { resetPassword } = useAuth()
@@ -27,7 +28,7 @@ export default function ForgotPasswordPage() {
       await resetPassword(email)
       setStep('code')
     } catch (err: any) {
-      setError(err.message || 'Failed to send reset email')
+      setError(toUserMessage(err, FRIENDLY_ERRORS.resetSend))
     } finally {
       setLoading(false)
     }
@@ -36,7 +37,7 @@ export default function ForgotPasswordPage() {
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!passwordStrength.isValid) {
-      setError('Password does not meet all complexity requirements.')
+      setError('That password doesn’t meet all the requirements yet — please complete each item below.')
       return
     }
     setLoading(true)
@@ -46,7 +47,7 @@ export default function ForgotPasswordPage() {
       await new Promise((r) => setTimeout(r, 600))
       setStep('done')
     } catch (err: any) {
-      setError(err.message || 'Reset failed. Email address not found in user records.')
+      setError(toUserMessage(err, FRIENDLY_ERRORS.resetNotFound))
     } finally {
       setLoading(false)
     }

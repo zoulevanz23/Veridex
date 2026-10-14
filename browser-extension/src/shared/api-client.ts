@@ -52,13 +52,13 @@ export const api = {
           continue; // Try next endpoint
         }
 
-        throw new Error(resData.error || `HTTP ${response.status}`);
+        throw new Error('We couldn’t complete this check. Please try again in a moment.');
       } catch (err: any) {
         lastError = err;
       }
     }
 
-    throw lastError || new Error('Could not reach Veridex server');
+    throw lastError || new Error('We couldn’t complete this check. Please try again in a moment.');
   },
 
   health: async (): Promise<boolean> => {

@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config/api'
+import { FRIENDLY_ERRORS } from './friendlyErrors'
 
 export type Verdict = 'SAFE' | 'SUSPICIOUS' | 'SCAM' | 'TRUSTWORTHY' | 'QUESTIONABLE' | 'LIKELY_FAKE'
 
@@ -107,10 +108,10 @@ export const analyzeContent = async (
       }
     }
     
-    // For image analysis, do NOT fall back to local heuristics — they cannot
-    // actually inspect pixels and would return a meaningless result.
+    // Image checks need the full verification service — local checks can't
+    // read pixels, so tell the user plainly instead of guessing.
     if (type === 'image' || content.startsWith('data:image')) {
-      throw new Error('Image scanning is not available right now. Please make sure the Veridex server is running and try again.')
+      throw new Error(FRIENDLY_ERRORS.image)
     }
     
     // For text-based types, fall back to local heuristics engine
@@ -119,7 +120,7 @@ export const analyzeContent = async (
 
   } catch (error: unknown) {
     if (type === 'image' || content.startsWith('data:image')) {
-      throw new Error('Image scanning is not available right now. Please make sure the Veridex server is running and try again.')
+      throw new Error(FRIENDLY_ERRORS.image)
     }
     console.warn('Backend API connection unavailable, falling back to local heuristic engine:', error)
     return localHeuristicAnalysis(content, type)

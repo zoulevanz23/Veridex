@@ -7,6 +7,7 @@ import MarginNotes from '../components/landing/MarginNotes'
 import ExtensionDemo from '../components/landing/ExtensionDemo'
 import IntakeSlip from '../components/landing/IntakeSlip'
 import { analyzeContent, type AnalysisResponse } from '../lib/api'
+import { toUserMessage, FRIENDLY_ERRORS } from '../lib/friendlyErrors'
 
 function useIsMobile() {
   const [mobile, setMobile] = useState(false)
@@ -49,7 +50,7 @@ function PasteBox() {
       const out = await analyzeContent(value, 'message')
       setResult(out)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Analysis failed.')
+      setError(toUserMessage(err, FRIENDLY_ERRORS.analysis))
     } finally {
       setLoading(false)
     }

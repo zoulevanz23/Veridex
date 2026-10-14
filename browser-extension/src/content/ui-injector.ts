@@ -123,8 +123,8 @@ ui.indicator.classList.remove('dismissed');
             updateUI({
               verdict: 'Error',
               confidence: 0,
-              signals: ['Service worker unavailable. Reload page.'],
-              explanation: chrome.runtime.lastError.message
+              signals: ['Please reload the tab and try again.'],
+              explanation: 'We couldn’t complete this check right now. Please try again in a moment.'
             });
           }
         });
@@ -330,8 +330,8 @@ ui.indicator.classList.remove('dismissed');
             updateUI({
               verdict: 'Error',
               confidence: 0,
-              signals: ['Background connection failed.'],
-              explanation: 'Please start backend server on port 5000.'
+              signals: ['Please try again in a moment.'],
+              explanation: 'We couldn’t complete this check right now. Please try again in a moment.'
             });
           }
         });

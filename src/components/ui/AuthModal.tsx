@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { validatePassword } from '../../lib/password'
 import PasswordStrengthMeter from './PasswordStrengthMeter'
 import GoogleSignInButton from './GoogleSignInButton'
+import { toUserMessage, FRIENDLY_ERRORS } from '../../lib/friendlyErrors'
 
 type Tab = 'register' | 'signin'
 
@@ -36,7 +37,7 @@ export default function AuthModal() {
     if (tab === 'register') {
       if (!name || !email || !password) return
       if (!passwordStrength.isValid) {
-        setError('Password must meet all complexity requirements.')
+        setError('That password doesn’t meet all the requirements yet — please complete each item below.')
         return
       }
       setLoading(true)
@@ -44,7 +45,7 @@ export default function AuthModal() {
         await register({ name, email, password }, true)
         close()
       } catch (err: any) {
-        setError(err.message)
+        setError(toUserMessage(err, FRIENDLY_ERRORS.register))
       } finally {
         setLoading(false)
       }
@@ -55,7 +56,7 @@ export default function AuthModal() {
         await login(email, password, true)
         close()
       } catch (err: any) {
-        setError(err.message)
+        setError(toUserMessage(err, FRIENDLY_ERRORS.signin))
       } finally {
         setLoading(false)
       }
